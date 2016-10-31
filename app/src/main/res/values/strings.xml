@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Welcome</string>
+    <string name="name_edittext">Имя</string>
+    <string name="email_edittext">Почта</string>
+    <string name="temp_button_go">Поехали</string>
+    <string name="temp_doesnt_matter_textview">Не обязательно</string>
+    <string name="toast_error_email">Введите корректный email, или не вводите вообще</string>
+    <string name="toast_error_name">Имя не должно быть пустым</string>
+    <string name="toast_error_load_message">Попробуйте еще раз</string>
+</resources>
