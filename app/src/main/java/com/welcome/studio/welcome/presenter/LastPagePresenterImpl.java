@@ -13,14 +13,22 @@ import com.welcome.studio.welcome.R;
 import com.welcome.studio.welcome.model.ModelFirebaseStorage;
 import com.welcome.studio.welcome.model.ModelServer;
 import com.welcome.studio.welcome.model.ModelServerImpl;
+import com.welcome.studio.welcome.model.entity.DaoSession;
+import com.welcome.studio.welcome.model.entity.ExceptionJSONInfo;
+import com.welcome.studio.welcome.model.entity.RaitingDao;
 import com.welcome.studio.welcome.model.entity.User;
+import com.welcome.studio.welcome.model.entity.UserDao;
+import com.welcome.studio.welcome.util.App;
 import com.welcome.studio.welcome.util.AuthService;
 import com.welcome.studio.welcome.util.BitmapCreator;
 import com.welcome.studio.welcome.util.Constance;
+import com.welcome.studio.welcome.util.ExceptionUtil;
 import com.welcome.studio.welcome.view.fragment.firststart.LastPageFragment;
 
 import java.io.FileNotFoundException;
+import java.net.SocketTimeoutException;
 
+import retrofit2.adapter.rxjava.HttpException;
 import rx.Observer;
 
 /**
@@ -47,14 +55,23 @@ public class LastPagePresenterImpl implements LastPagePresenter {
 
             @Override
             public void onError(Throwable e) {
-                Log.e("Presenter: ", "On Error " + e.toString());
+                Log.e("On error ",e.toString());
+                if (e instanceof HttpException) {
+                    ExceptionJSONInfo exceptionJSONInfo= ExceptionUtil.parseEx(((HttpException) e).response());
+                    view.showToast(exceptionJSONInfo.getMessage());
+                }
+                if (e instanceof SocketTimeoutException){
+                    view.showToast(R.string.toast_error_connect);
+                }
 
             }
 
             @Override
             public void onNext(User user) {
                 modelServer.authUser(user.getImei()).subscribe(token -> {
-                    view.savePreferences(user.getImei(), user.getNickname());
+                    DaoSession daoSession= App.getDaoSession();
+                    UserDao userDao=daoSession.getUserDao();
+                    RaitingDao raitingDao=daoSession.getRaitingDao();
                     if (photoExists) {
                         AuthService.auth(token)
                                 .addOnFailureListener(failrule -> Log.e("auth fail", failrule.getMessage()))
@@ -65,20 +82,25 @@ public class LastPagePresenterImpl implements LastPagePresenter {
                                                 .addOnFailureListener(failure -> Log.e("Fail to upload ", failure.getMessage()))
                                                 .addOnSuccessListener(success -> {
                                                     Log.e("Success upload ", success.getDownloadUrl() + "");
-                                                    User updateableUser=new User(user.getNickname(),user.getEmail(),user.getImei());
-                                                    updateableUser.setId(user.getId());
-                                                    updateableUser.setPhotoRef(String.valueOf(success.getDownloadUrl()));
-                                                    modelServer.updateUser(updateableUser).subscribe(user1 -> {
+                                                    user.setPhotoRef(String.valueOf(success.getDownloadUrl()));
+                                                    modelServer.updateUser(user).subscribe(user1 -> {
                                                         Log.e("is update"," successfully");
+                                                        userDao.insert(user1);
+                                                        raitingDao.insert(user1.getRaitingFromJson());
                                                     });
                                                 });
-                                        //save to server and db
+                                        view.savePreferences(user.getImei(), user.getNickname());
                                         view.start(true);
                                     } catch (FileNotFoundException e) {
                                         e.printStackTrace();
                                     }
                                 });
-                    } else view.start(false);
+                    } else {
+                        userDao.insert(user);
+                        raitingDao.insert(user.getRaitingFromJson());
+                        view.savePreferences(user.getImei(), user.getNickname());
+                        view.start(false);
+                    }
                 });
             }
         });

@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 public interface LastPageFragment {
 
     void showToast(int strId);
+    void showToast(String message);
     void drawPhoto(Bitmap bitmap);
     void savePreferences(String imei,String name);
     void start(boolean isAuth);

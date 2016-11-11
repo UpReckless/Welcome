@@ -7,4 +7,5 @@
     <string name="toast_error_email">Введите корректный email, или не вводите вообще</string>
     <string name="toast_error_name">Имя не должно быть пустым</string>
     <string name="toast_error_load_message">Попробуйте еще раз</string>
+    <string name="toast_error_connect">Не удалось связаться с сервером, проверьте соеднение с интернетом.</string>
 </resources>

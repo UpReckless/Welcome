@@ -1,6 +1,7 @@
 package com.welcome.studio.welcome.presenter;
 
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 /**
@@ -8,5 +9,5 @@ import android.support.annotation.Nullable;
  */
 
 public interface MainActivityPresenter {
-    void onCreate(SharedPreferences sharedPreferences, boolean isAuth);
+    void onCreate(SharedPreferences sharedPreferences, boolean isAuth,Bundle savedInstanceState);
 }

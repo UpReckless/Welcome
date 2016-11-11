@@ -11,7 +11,7 @@ public class Constance {
     }
 
     public static class URL {
-        public static final String HOST = "http://192.168.0.102:8080/";
+        public static final String HOST = "http://192.168.3.112:8080/";
         public static final String USER_REG = "user/reg";
         public static final String USER_AUTH = "user/auth";
         public static final String USER_UPDATE = "user/update";
@@ -28,6 +28,10 @@ public class Constance {
     public static class SharedPreferencesHolder{
         public static final String NAME="name";
         public static final String IMEI="imei";
+    }
+    public static class CallbackPermissionsHolder{
+        public static final int REQUEST_READ_PHONE_STATE=600;
+        public static final int REQUEST_WRITE_EXTERNAL_STORAGE =601 ;
     }
 
 
