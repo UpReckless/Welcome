@@ -1,6 +1,8 @@
 package com.welcome.studio.welcome.view.fragment.firststart;
 
+import android.annotation.TargetApi;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.welcome.studio.welcome.BuildConfig;
 import com.welcome.studio.welcome.R;
 
 import java.io.IOException;
@@ -46,12 +49,30 @@ public class FirstPageFragment extends Fragment {
     }
 
     private void loadImg(String firstStartFirstImage) {
-        try (InputStream is = getActivity().getAssets().open(firstStartFirstImage)) {
-            Drawable drawable = Drawable.createFromStream(is, null);
-            backgroundImg.setImageDrawable(drawable);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("catch",e.toString());
+        if (Build.VERSION.SDK_INT >= 19) {
+            try (InputStream is = getActivity().getAssets().open(firstStartFirstImage)) {
+                Drawable drawable = Drawable.createFromStream(is, null);
+                backgroundImg.setImageDrawable(drawable);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("catch", e.toString());
+            }
+        } else {
+            InputStream is = null;
+            try {
+                is = getActivity().getAssets().open(firstStartFirstImage);
+                Drawable drawable = Drawable.createFromStream(is, null);
+                backgroundImg.setImageDrawable(drawable);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (is != null)
+                        is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

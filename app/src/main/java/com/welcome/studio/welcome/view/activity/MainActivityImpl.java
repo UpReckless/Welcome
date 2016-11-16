@@ -1,13 +1,13 @@
 package com.welcome.studio.welcome.view.activity;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
 import com.luseen.spacenavigation.SpaceItem;
 import com.luseen.spacenavigation.SpaceNavigationView;
@@ -17,14 +17,17 @@ import com.welcome.studio.welcome.presenter.MainActivityPresenter;
 import com.welcome.studio.welcome.presenter.MainActivityPresenterImpl;
 import com.welcome.studio.welcome.util.Constance;
 import com.welcome.studio.welcome.view.fragment.DepthPagerTransformer;
+import com.welcome.studio.welcome.view.fragment.HomeFragment;
+import com.welcome.studio.welcome.view.fragment.PhotoFragment;
+import com.welcome.studio.welcome.view.fragment.ProfileFragment;
 import com.welcome.studio.welcome.view.fragment.firststart.FirstFragmentPagerAdapter;
 
 import me.relex.circleindicator.CircleIndicator;
 
-public class MainActivityImpl extends AppCompatActivity implements MainActivity, SpaceOnClickListener {
+public class MainActivityImpl extends AppCompatActivity implements MainActivity {
 
     private MainActivityPresenter presenter;
-    private FragmentManager fragmentManager;
+    private SpaceNavigationView spaceNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,42 +54,37 @@ public class MainActivityImpl extends AppCompatActivity implements MainActivity,
         setTheme(R.style.AppTheme);
         setContentView(R.layout.activity_main);
         initSpaceNavigation(savedInstanceState);
-        fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .add(R.id.container, new Fragment(), "Home")
-                .addToBackStack("Home")
-                .commit();
+        presenter.start(getSupportFragmentManager());
     }
 
     @Override
-    public void onCentreButtonClick() {
-        Log.e("OnCentreBtnClick", "Hehe");
+    public void setNavigationMenuVisibility(boolean isVisible) {
+        spaceNavigationView.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
-    public void onItemClick(int itemIndex, String itemName) {
-        switch (itemName) {
-            case "Home": {
-                Log.e("onItemClick", "Home");
-                break;
-            }
-            case "Profile": {
-                Log.e("onItemClick", "Profile");
-                break;
-            }
-        }
+    public void closeApp() {
+        finish();
     }
 
     @Override
-    public void onItemReselected(int itemIndex, String itemName) {
-        Log.e("OnItemreselected", itemName);
+    public void changeCurrentItem(int index) {
+        spaceNavigationView.changeCurrentItem(index);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (spaceNavigationView != null) {
+            presenter.onBackPressed();
+        } else super.onBackPressed();
     }
 
     private void initSpaceNavigation(Bundle savedInstanceState) {
-        SpaceNavigationView spaceNavigationView = (SpaceNavigationView) findViewById(R.id.space);
+        spaceNavigationView = (SpaceNavigationView) findViewById(R.id.space);
         spaceNavigationView.initWithSaveInstanceState(savedInstanceState);
-        spaceNavigationView.addSpaceItem(new SpaceItem("Home", R.mipmap.ic_launcher));
-        spaceNavigationView.addSpaceItem(new SpaceItem("Profile", R.mipmap.ic_launcher));
-        spaceNavigationView.setSpaceOnClickListener(this);
+        spaceNavigationView.addSpaceItem(new SpaceItem(Constance.FragmentTagHolder.HOME_MAIN_TAG, R.mipmap.ic_launcher));
+        spaceNavigationView.addSpaceItem(new SpaceItem(Constance.FragmentTagHolder.PROFILE_MAIN_TAG, R.mipmap.ic_launcher));
+        spaceNavigationView.setSpaceOnClickListener(presenter);
     }
+
 }

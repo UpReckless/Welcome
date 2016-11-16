@@ -6,7 +6,10 @@ import android.os.Bundle;
  * Created by Royal on 28.10.2016.
  */
 
-public interface MainActivity {
+public interface MainActivity  {
     void setFirstStart();
     void start(Bundle savedInstanceState);
+    void setNavigationMenuVisibility(boolean isVisible);
+    void closeApp();
+    void changeCurrentItem(int index);
 }
