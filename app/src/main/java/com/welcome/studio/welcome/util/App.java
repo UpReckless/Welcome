@@ -15,21 +15,15 @@ import org.greenrobot.greendao.database.Database;
 
 public class App extends Application {
 
-    private static Context context;
     private static DaoSession daoSession;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
-        context=getApplicationContext();
         DaoMaster.DevOpenHelper devOpenHelper=new DaoMaster.DevOpenHelper(this,"welcomedb");
         Database db=devOpenHelper.getWritableDb();
         daoSession=new DaoMaster(db).newSession();
-    }
-
-    public static Context getContext() {
-        return context;
     }
 
     public static DaoSession getDaoSession() {

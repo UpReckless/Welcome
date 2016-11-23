@@ -1,26 +1,19 @@
 package com.welcome.studio.welcome.view.activity;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 
 import com.luseen.spacenavigation.SpaceItem;
 import com.luseen.spacenavigation.SpaceNavigationView;
-import com.luseen.spacenavigation.SpaceOnClickListener;
 import com.welcome.studio.welcome.R;
 import com.welcome.studio.welcome.presenter.MainActivityPresenter;
 import com.welcome.studio.welcome.presenter.MainActivityPresenterImpl;
 import com.welcome.studio.welcome.util.Constance;
-import com.welcome.studio.welcome.view.fragment.DepthPagerTransformer;
-import com.welcome.studio.welcome.view.fragment.HomeFragment;
-import com.welcome.studio.welcome.view.fragment.PhotoFragment;
-import com.welcome.studio.welcome.view.fragment.ProfileFragment;
-import com.welcome.studio.welcome.view.fragment.firststart.FirstFragmentPagerAdapter;
+import com.welcome.studio.welcome.util.DepthPagerTransformer;
+import com.welcome.studio.welcome.view.fragment.adapter.FirstFragmentPagerAdapter;
 
 import me.relex.circleindicator.CircleIndicator;
 
@@ -70,11 +63,13 @@ public class MainActivityImpl extends AppCompatActivity implements MainActivity 
     @Override
     public void changeCurrentItem(int index) {
         spaceNavigationView.changeCurrentItem(index);
+        spaceNavigationView.setSpaceOnClickListener(presenter);
     }
 
     @Override
     public void onBackPressed() {
         if (spaceNavigationView != null) {
+            spaceNavigationView.setSpaceOnClickListener(null);
             presenter.onBackPressed();
         } else super.onBackPressed();
     }

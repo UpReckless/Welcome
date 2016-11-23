@@ -9,6 +9,6 @@ import com.welcome.studio.welcome.R;
 public class PhotoFragment extends BaseFragment {
     @Override
     public int getFragmentLayout() {
-        return R.layout.photo_main_fragment;
+        return R.layout.photo_fragment;
     }
 }

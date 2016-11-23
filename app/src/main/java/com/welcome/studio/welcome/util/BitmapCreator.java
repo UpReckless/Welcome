@@ -3,6 +3,8 @@ package com.welcome.studio.welcome.util;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import java.io.InputStream;
+
 /**
  * Created by Royal on 16.10.2016.
  */

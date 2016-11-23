@@ -23,7 +23,7 @@ import com.welcome.studio.welcome.util.AuthService;
 import com.welcome.studio.welcome.util.BitmapCreator;
 import com.welcome.studio.welcome.util.Constance;
 import com.welcome.studio.welcome.util.ExceptionUtil;
-import com.welcome.studio.welcome.view.fragment.firststart.LastPageFragment;
+import com.welcome.studio.welcome.view.fragment.LastPageFragment;
 
 import java.io.FileNotFoundException;
 import java.net.SocketTimeoutException;
