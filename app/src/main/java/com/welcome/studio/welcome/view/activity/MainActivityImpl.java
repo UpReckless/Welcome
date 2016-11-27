@@ -1,6 +1,7 @@
 package com.welcome.studio.welcome.view.activity;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,8 @@ import com.welcome.studio.welcome.presenter.MainActivityPresenter;
 import com.welcome.studio.welcome.presenter.MainActivityPresenterImpl;
 import com.welcome.studio.welcome.util.Constance;
 import com.welcome.studio.welcome.util.DepthPagerTransformer;
+import com.welcome.studio.welcome.view.fragment.HomeFragment;
+import com.welcome.studio.welcome.view.fragment.ProfileFragment;
 import com.welcome.studio.welcome.view.fragment.adapter.FirstFragmentPagerAdapter;
 
 import me.relex.circleindicator.CircleIndicator;
@@ -47,7 +50,7 @@ public class MainActivityImpl extends AppCompatActivity implements MainActivity 
         setTheme(R.style.AppTheme);
         setContentView(R.layout.activity_main);
         initSpaceNavigation(savedInstanceState);
-        presenter.start(getSupportFragmentManager());
+        presenter.start();
     }
 
     @Override
@@ -56,8 +59,8 @@ public class MainActivityImpl extends AppCompatActivity implements MainActivity 
     }
 
     @Override
-    public void closeApp() {
-        finish();
+    public void customBackPressed() {
+        super.onBackPressed();
     }
 
     @Override
@@ -82,4 +85,13 @@ public class MainActivityImpl extends AppCompatActivity implements MainActivity 
         spaceNavigationView.setSpaceOnClickListener(presenter);
     }
 
+    @Override
+    public FragmentManager getCurrentFragmentManager(){
+        return getSupportFragmentManager();
+    }
+
+    @Override
+    public void setOnClickListener(boolean b) {
+        spaceNavigationView.setSpaceOnClickListener(b?presenter:null);
+    }
 }

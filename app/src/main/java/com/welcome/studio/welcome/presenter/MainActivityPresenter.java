@@ -16,7 +16,7 @@ public interface MainActivityPresenter extends SpaceOnClickListener {
 
     void onBackPressed();
 
-    void start(FragmentManager fm);
+    void start();
 
     @Override
     void onCentreButtonClick();

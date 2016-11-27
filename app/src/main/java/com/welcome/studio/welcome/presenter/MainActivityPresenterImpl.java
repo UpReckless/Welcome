@@ -2,30 +2,29 @@ package com.welcome.studio.welcome.presenter;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
 import com.welcome.studio.welcome.R;
 import com.welcome.studio.welcome.model.ModelServer;
 import com.welcome.studio.welcome.model.ModelServerImpl;
 import com.welcome.studio.welcome.util.Constance;
-import com.welcome.studio.welcome.util.FragmentManipulator;
 import com.welcome.studio.welcome.view.activity.MainActivity;
 import com.welcome.studio.welcome.view.fragment.BaseFragment;
 import com.welcome.studio.welcome.view.fragment.HomeFragment;
 import com.welcome.studio.welcome.view.fragment.PhotoFragment;
+import com.welcome.studio.welcome.view.fragment.ProfileFragment;
 
 
-public class MainActivityPresenterImpl implements MainActivityPresenter, FragmentManager.OnBackStackChangedListener {
+public class MainActivityPresenterImpl implements MainActivityPresenter {
 
     private MainActivity view;
-    private FragmentManager fm;
-    private boolean handled = false;
-    private FragmentManipulator fragmentManipulator;
+    private boolean handledBack = true;
+    private boolean lastFragmentIsHome;
+    private HomeFragment homeFragment;
+    private ProfileFragment profileFragment;
 
     public MainActivityPresenterImpl(MainActivity view) {
         this.view = view;
-        fragmentManipulator = FragmentManipulator.getInstance();
     }
 
     @Override
@@ -48,69 +47,75 @@ public class MainActivityPresenterImpl implements MainActivityPresenter, Fragmen
         } else view.setFirstStart();
     }
 
-    @Override
-    public void onBackPressed() {
-        int count = fm.getBackStackEntryCount();
-        if (count == 0 || handled) {
-            view.closeApp();
-            return;
-        }
-        String fragmentName = fm.getBackStackEntryAt(count - 1).getName();
-        fm.popBackStack();
-        if (fragmentName.equals(Constance.FragmentTagHolder.PHOTO_MAIN_TAG)) {
-            view.changeCurrentItem(fragmentName.equals(Constance.FragmentTagHolder.HOME_MAIN_TAG) ? 0 : 1);
-            view.setNavigationMenuVisibility(true);
-        } else {
-            view.changeCurrentItem(fragmentName.equals(Constance.FragmentTagHolder.HOME_MAIN_TAG) ? 1 : 0);
-            handled = true;
-        }
-    }
 
     @Override
-    public void start(FragmentManager fm) {
-        this.fm = fm;
-        this.fm.addOnBackStackChangedListener(this);
-        this.fm.beginTransaction()
-                .add(R.id.container, new HomeFragment(), Constance.FragmentTagHolder.HOME_MAIN_TAG)
+    public void start() {
+        homeFragment = (HomeFragment) this.view.getCurrentFragmentManager().findFragmentById(R.id.home_fragment);
+        profileFragment = (ProfileFragment) this.view.getCurrentFragmentManager().findFragmentById(R.id.profile_fragment);
+        view.getCurrentFragmentManager().beginTransaction()
+                .hide(profileFragment)
+                .show(homeFragment)
                 .commitAllowingStateLoss();
     }
 
     @Override
     public void onCentreButtonClick() {
         view.setNavigationMenuVisibility(false);
+        lastFragmentIsHome = homeFragment.isVisible();
+        view.getCurrentFragmentManager().beginTransaction().hide(lastFragmentIsHome ? homeFragment : profileFragment).commit();
         replaceFragmentWithAddingToBackStack(new PhotoFragment(), Constance.FragmentTagHolder.PHOTO_MAIN_TAG);
     }
 
     @Override
     public void onItemClick(int itemIndex, String itemName) {
-        int count = fm.getBackStackEntryCount();
-        handled = false;
-        if (count < 2)
-            replaceFragmentWithAddingToBackStack(fragmentManipulator.getFragment(itemName), itemName);
-        else fm.popBackStack();
-
+        switch (itemIndex) {
+            case 0: {
+                replaceFragmentVisibility(profileFragment, homeFragment);
+                break;
+            }
+            case 1: {
+                replaceFragmentVisibility(homeFragment, profileFragment);
+                break;
+            }
+        }
+        handledBack = false;
     }
 
     @Override
     public void onItemReselected(int itemIndex, String itemName) {
-        if (handled) {
-            handled = false;
-            fm.popBackStack();
-        }
+        Log.e("onItem", "resel");
     }
 
     @Override
-    public void onBackStackChanged() { // for debug mode
-        Log.e("BACKSTACK P count is ", fm.getBackStackEntryCount() + "");
-        for (int i = fm.getBackStackEntryCount(); i > 0; i--) {
-            Log.e("Backstack P entry " + i, fm.getBackStackEntryAt(i - 1).getName());
+    public void onBackPressed() {
+        if (view.getCurrentFragmentManager().getBackStackEntryCount() > 0 || handledBack) {
+            view.customBackPressed();
+            view.setNavigationMenuVisibility(true);
+            view.setOnClickListener(true);
+            replaceFragmentVisibility(lastFragmentIsHome ? profileFragment : homeFragment, lastFragmentIsHome ? homeFragment : profileFragment);
+            return;
+        }
+        if (homeFragment.isHidden()) {
+            replaceFragmentVisibility(profileFragment, homeFragment);
+            view.changeCurrentItem(0);
+            handledBack = true;
+        } else {
+            replaceFragmentVisibility(homeFragment, profileFragment);
+            view.changeCurrentItem(1);
+            handledBack = true;
         }
     }
 
+    private void replaceFragmentVisibility(BaseFragment hideFragment, BaseFragment showFragment) {
+        view.getCurrentFragmentManager().beginTransaction().hide(hideFragment).commit();
+        view.getCurrentFragmentManager().beginTransaction().show(showFragment).commit();
+    }
+
+
     private void replaceFragmentWithAddingToBackStack(BaseFragment fragment, String fragmentName) {
-        fm.beginTransaction()
+        view.getCurrentFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment, fragmentName)
-                .addToBackStack(fragmentName)
+                .addToBackStack(null)
                 .commit();
     }
 }

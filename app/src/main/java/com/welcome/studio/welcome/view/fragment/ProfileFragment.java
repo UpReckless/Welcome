@@ -17,6 +17,8 @@ import com.welcome.studio.welcome.view.fragment.adapter.ProfileFragmentPagerAdap
 public class ProfileFragment extends BaseFragment {
 
     private ProfileFragmentPagerAdapter adapter;
+    ViewPager viewPager;
+    SlidingTabLayout slidingTabLayout;
 
 
     @Override
@@ -28,11 +30,26 @@ public class ProfileFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ViewPager viewPager=(ViewPager)view.findViewById(R.id.viewPager);
-        SlidingTabLayout slidingTabLayout=(SlidingTabLayout)view.findViewById(R.id.sliding_tabs);
-        slidingTabLayout.setDistributeEvenly(true);
+        viewPager=(ViewPager)view.findViewById(R.id.viewPager);
+        slidingTabLayout=(SlidingTabLayout)view.findViewById(R.id.sliding_tabs);
+
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         viewPager.setAdapter(adapter);
+        if (savedInstanceState!=null){
+            viewPager.setCurrentItem(savedInstanceState.getInt("position"));
+        }
+        slidingTabLayout.setDistributeEvenly(true);
         slidingTabLayout.setViewPager(viewPager);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("position",viewPager.getCurrentItem());
     }
 
     @Override
