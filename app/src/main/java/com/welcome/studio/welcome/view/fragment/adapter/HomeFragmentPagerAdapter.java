@@ -15,6 +15,9 @@ import com.welcome.studio.welcome.view.fragment.impl.MyWallFragmentImpl;
 
 public class HomeFragmentPagerAdapter extends FragmentPagerAdapter {
     private static final int PAGE_COUNT=3;
+    private MyWallFragmentImpl myWallFragment;
+    private MainWallFragmentImpl mainWallFragment;
+    private CommerceWallFragmentImpl commerceWallFragment;
     public HomeFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
     }
@@ -23,13 +26,19 @@ public class HomeFragmentPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position){
             case 0:{
-                return new MyWallFragmentImpl();
+                if (myWallFragment==null)
+                    myWallFragment=new MyWallFragmentImpl();
+                return myWallFragment;
             }
             case 1:{
-                return new MainWallFragmentImpl();
+                if (mainWallFragment==null)
+                    mainWallFragment=new MainWallFragmentImpl();
+                return mainWallFragment;
             }
             case 2:{
-                return new CommerceWallFragmentImpl();
+                if (commerceWallFragment==null)
+                    commerceWallFragment=new CommerceWallFragmentImpl();
+                return commerceWallFragment;
             }
         }
         throw new RuntimeException("Illegal fragment position "+position+" (HomeFragmentPagerAdapter)");

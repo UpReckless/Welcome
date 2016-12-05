@@ -22,48 +22,54 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.mikhaellopez.circularimageview.CircularImageView;
+import com.squareup.picasso.Picasso;
+import com.subinkrishna.widget.CircularImageView;
 import com.welcome.studio.welcome.R;
+import com.welcome.studio.welcome.dagger.FirstStartComponent;
 import com.welcome.studio.welcome.presenter.LastPagePresenter;
-import com.welcome.studio.welcome.presenter.LastPagePresenterImpl;
 import com.welcome.studio.welcome.util.Constance;
 import com.welcome.studio.welcome.view.activity.MainActivityImpl;
 import com.welcome.studio.welcome.view.fragment.LastPageFragment;
 
+import java.io.File;
+
+import javax.inject.Inject;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 
 public class LastPageFragmentImpl extends Fragment implements View.OnTouchListener, LastPageFragment {
 
-    private LastPagePresenter presenter;
+    @Inject
+    LastPagePresenter presenter;
+    private FirstStartComponent firstStartComponent;
+    @Bind(R.id.button_go) ImageView btnGo;
+    @Bind(R.id.edit_name) EditText editName;
+    @Bind(R.id.edit_email) EditText editMail;
+    @Bind(R.id.avatar_image_view) CircularImageView imgAvatar;
 
-    private ImageView btnGo;
-    private EditText editName;
-    private EditText editMail;
-    private CircularImageView imgAvatar;
-
-    public static LastPageFragmentImpl newInstance() {
-        return new LastPageFragmentImpl();
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        firstStartComponent=((MainActivityImpl) getActivity()).getFirstStartComponent();
+        firstStartComponent.inject(this);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.first_last_page_fragment, container, false);
-        presenter = new LastPagePresenterImpl(this);
         setComponents(view);
         return view;
     }
 
     private void setComponents(final View view) {
-        btnGo = (ImageView) view.findViewById(R.id.button_go);
-        editName = (EditText) view.findViewById(R.id.edit_name);
-        editMail = (EditText) view.findViewById(R.id.edit_email);
-        imgAvatar = (CircularImageView) view.findViewById(R.id.avatar_image_view);
+        ButterKnife.bind(this,view);
         imgAvatar.setBorderColor(getResources().getColor(R.color.colorWhite));
-        imgAvatar.setBorderWidth(10);
-        imgAvatar.addShadow();
+        imgAvatar.setBorderWidth(10,10);
         imgAvatar.setShadowRadius(15);
         imgAvatar.setShadowColor(Color.GRAY);
-        imgAvatar.addShadow();
         imgAvatar.setOnClickListener(view1 -> {
             int permissionCheck = ContextCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
@@ -122,8 +128,8 @@ public class LastPageFragmentImpl extends Fragment implements View.OnTouchListen
     }
 
     @Override
-    public void drawPhoto(Bitmap bitmap) {
-        imgAvatar.setImageBitmap(bitmap);
+    public void drawPhoto(String path) {
+        Picasso.with(getContext()).load(new File(path)).into(imgAvatar);
     }
 
     @Override
@@ -141,6 +147,11 @@ public class LastPageFragmentImpl extends Fragment implements View.OnTouchListen
         intent.putExtra(Constance.IntentKeyHolder.KEY_IS_FIRST, isAuth);
         startActivity(intent);
         getActivity().finish();
+    }
+
+    @Override
+    public FirstStartComponent getComponent() {
+        return firstStartComponent;
     }
 
     @Override

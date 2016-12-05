@@ -19,6 +19,10 @@ public class ArchivePhoto {
     private long id;
     @ToOne(joinProperty = "id")
     private User user;
+    @NotNull
+    private String photoPath;
+    @NotNull
+    private String photoRef;
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
@@ -35,9 +39,11 @@ public class ArchivePhoto {
         this.user = user;
     }
 
-    @Generated(hash = 1215599850)
-    public ArchivePhoto(long id) {
+    @Generated(hash = 728137815)
+    public ArchivePhoto(long id, @NotNull String photoPath, @NotNull String photoRef) {
         this.id = id;
+        this.photoPath = photoPath;
+        this.photoRef = photoRef;
     }
 
     public long getId() {
@@ -119,6 +125,22 @@ public class ArchivePhoto {
 
     public User getUserFromJson(){
         return user;
+    }
+
+    public String getPhotoPath() {
+        return this.photoPath;
+    }
+
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
+    }
+
+    public String getPhotoRef() {
+        return this.photoRef;
+    }
+
+    public void setPhotoRef(String photoRef) {
+        this.photoRef = photoRef;
     }
 
     /** called by internal mechanisms, do not call yourself. */

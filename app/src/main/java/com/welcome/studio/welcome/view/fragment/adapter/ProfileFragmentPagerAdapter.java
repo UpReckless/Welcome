@@ -5,6 +5,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.welcome.studio.welcome.view.fragment.MainChildProfileFragment;
+import com.welcome.studio.welcome.view.fragment.SearchChildProfileFragment;
 import com.welcome.studio.welcome.view.fragment.impl.MainChildProfileFragmentImpl;
 import com.welcome.studio.welcome.view.fragment.impl.SearchChildProfileFragmentImpl;
 
@@ -14,6 +16,8 @@ import com.welcome.studio.welcome.view.fragment.impl.SearchChildProfileFragmentI
 
 public class ProfileFragmentPagerAdapter extends FragmentStatePagerAdapter {
     private static final int PAGE_COUNT=2;
+    private MainChildProfileFragmentImpl mainChildProfileFragment;
+    private SearchChildProfileFragmentImpl searchChildProfileFragment;
 
     public ProfileFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -22,8 +26,16 @@ public class ProfileFragmentPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position){
-            case 0:return new MainChildProfileFragmentImpl();
-            case 1:return new SearchChildProfileFragmentImpl();
+            case 0: {
+                if (mainChildProfileFragment==null)
+                    mainChildProfileFragment=new MainChildProfileFragmentImpl();
+                return mainChildProfileFragment;
+            }
+            case 1:{
+                if (searchChildProfileFragment==null)
+                    searchChildProfileFragment=new SearchChildProfileFragmentImpl();
+                return searchChildProfileFragment;
+            }
         }
         throw new RuntimeException("Illegal fragment position "+position+" (ProfileFragmentPagerAdapter)");
     }

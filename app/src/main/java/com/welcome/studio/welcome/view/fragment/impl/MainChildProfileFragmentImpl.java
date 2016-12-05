@@ -6,13 +6,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 import android.widget.GridView;
 
-import com.mikhaellopez.circularimageview.CircularImageView;
+import com.subinkrishna.widget.CircularImageView;
 import com.welcome.studio.welcome.R;
 import com.welcome.studio.welcome.mock.MockGridAdapter;
+import com.welcome.studio.welcome.presenter.MainChildProfilePresenter;
+import com.welcome.studio.welcome.presenter.impl.MainChildProfilePresenterImpl;
 import com.welcome.studio.welcome.util.Constance;
 import com.welcome.studio.welcome.view.fragment.BaseFragment;
 import com.welcome.studio.welcome.view.fragment.MainChildProfileFragment;
@@ -26,10 +27,12 @@ public class MainChildProfileFragmentImpl extends BaseFragment implements MainCh
     private GridView gridImgView;
     private CircularImageView mainPhoto;
     private MockGridAdapter adapter;
+    private MainChildProfilePresenter presenter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        presenter=new MainChildProfilePresenterImpl(this,getActivity().getApplicationContext());
         adapter=new MockGridAdapter(getActivity());
     }
 

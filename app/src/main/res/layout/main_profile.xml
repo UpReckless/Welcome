@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <com.mikhaellopez.circularimageview.CircularImageView
+        <com.subinkrishna.widget.CircularImageView
             android:id="@+id/main_profile_img"
             android:layout_width="100sp"
             android:layout_height="100sp"

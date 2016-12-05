@@ -36,6 +36,8 @@ public class User {
     private String nickname;
     private String email;
     private String photoRef;
+    @JsonIgnore
+    private String photoPath;
 
     @NotNull
     @Unique
@@ -72,13 +74,13 @@ public class User {
         this.imei = imei;
     }
 
-    @Generated(hash = 952171802)
-    public User(long id, @NotNull String nickname, String email, String photoRef,
-            @NotNull String imei) {
+    @Generated(hash = 2089303606)
+    public User(long id, @NotNull String nickname, String email, String photoRef, String photoPath, @NotNull String imei) {
         this.id = id;
         this.nickname = nickname;
         this.email = email;
         this.photoRef = photoRef;
+        this.photoPath = photoPath;
         this.imei = imei;
     }
 
@@ -223,6 +225,14 @@ public class User {
 
     public Raiting getRaitingFromJson(){
         return raiting;
+    }
+
+    public String getPhotoPath() {
+        return this.photoPath;
+    }
+
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
     }
 
     /** called by internal mechanisms, do not call yourself. */

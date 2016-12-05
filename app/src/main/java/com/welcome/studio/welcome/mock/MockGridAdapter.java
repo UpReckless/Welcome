@@ -8,8 +8,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Picasso;
 import com.welcome.studio.welcome.R;
-import com.welcome.studio.welcome.util.BitmapCreator;
 
 import java.io.File;
 
@@ -55,7 +55,7 @@ public class MockGridAdapter extends BaseAdapter {
             viewHolder.gridImgView=(ImageView)view.findViewById(R.id.grid_img_view);
             view.setTag(viewHolder);
         }else viewHolder=(ViewHolder)view.getTag();
-        viewHolder.gridImgView.setImageBitmap(BitmapCreator.decodeSampledBitmapFromPath(dir.getPath()+"/"+getItem(i),100,100));
+        Picasso.with(context).load(new File(dir.getPath())).into(viewHolder.gridImgView);
         return view;
     }
     private static class ViewHolder{

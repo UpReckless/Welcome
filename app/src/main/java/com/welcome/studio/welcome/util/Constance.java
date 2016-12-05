@@ -1,8 +1,6 @@
 package com.welcome.studio.welcome.util;
 
-/**
- * Created by Royal on 19.09.2016.
- */
+
 public class Constance {
     public static class BackgroundImageHolder {
         public static final String FIRST_START_FIRST_IMAGE = "first_fragment.png";
