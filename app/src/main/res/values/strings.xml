@@ -1,11 +1,8 @@
 <resources>
-    <string name="app_name">Welcome</string>
-    <string name="name_edittext">Имя</string>
-    <string name="email_edittext">Почта</string>
-    <string name="temp_button_go">Поехали</string>
-    <string name="temp_doesnt_matter_textview">Не обязательно</string>
-    <string name="toast_error_email">Введите корректный email, или не вводите вообще</string>
-    <string name="toast_error_name">Имя не должно быть пустым</string>
-    <string name="toast_error_load_message">Попробуйте еще раз</string>
-    <string name="toast_error_connect">Не удалось связаться с сервером, проверьте соеднение с интернетом.</string>
+    <string name="app_name">WelcomeApp</string>
+    <string name="wall">Wall</string>
+    <string name="history">History</string>
+    <string name="search">Search</string>
+    <string name="rating">Rating</string>
+    <string name="pay">Pay</string>
 </resources>

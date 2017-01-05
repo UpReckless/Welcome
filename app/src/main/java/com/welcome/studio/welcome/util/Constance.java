@@ -1,17 +1,20 @@
 package com.welcome.studio.welcome.util;
 
 
+import android.os.Environment;
+
+import java.io.File;
+
 public class Constance {
     public static class BackgroundImageHolder {
-        public static final String FIRST_START_FIRST_IMAGE = "first_fragment.png";
-        public static final String FIRST_START_SECOND_IMAGE = "second_fragment.png";
-        public static final String FIRST_START_THIRD_IMAGE = "third_fragment.png";
+
     }
 
     public static class URL {
         public static final String HOST = "http://192.168.3.112:8080/";
         public static final String USER_REG = "user/reg";
         public static final String USER_AUTH = "user/auth";
+        public static final String USER_GET_ALL ="user/getAll" ;
         public static final String USER_UPDATE = "user/update";
 
         public static final String FIREBASE_STORAGE = "gs://welcomepush-96f73.appspot.com";
@@ -29,6 +32,9 @@ public class Constance {
     public static class SharedPreferencesHolder {
         public static final String NAME = "name";
         public static final String IMEI = "imei";
+        public static final String ID = "id";
+        public static final String KEY = "pref";
+        public static final String PHOTO_PATH = "photopath";
     }
 
     public static class CallbackPermissionsHolder {
@@ -37,8 +43,9 @@ public class Constance {
     }
 
     public static class FragmentTagHolder {
-        public static final String HOME_MAIN_TAG = "Home";
-        public static final String PROFILE_MAIN_TAG = "Profile";
-        public static final String PHOTO_MAIN_TAG = "Photo";
+
+    }
+    public static class AppDirectoryHolder{
+        public static final File PHOTO_DIR= new File(Environment.getExternalStorageDirectory()+"/Welcome");
     }
 }

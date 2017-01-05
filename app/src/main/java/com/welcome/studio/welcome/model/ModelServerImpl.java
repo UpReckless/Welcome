@@ -1,12 +1,9 @@
 package com.welcome.studio.welcome.model;
 
-import com.welcome.studio.welcome.model.entity.User;
-import com.welcome.studio.welcome.model.repository.ServerRepositoryCreator;
+import com.welcome.studio.welcome.model.pojo.User;
 import com.welcome.studio.welcome.model.repository.ServerRepository;
-import com.welcome.studio.welcome.util.App;
-import com.welcome.studio.welcome.view.activity.MainActivity;
 
-import javax.inject.Inject;
+import java.util.List;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -15,10 +12,9 @@ import rx.schedulers.Schedulers;
 
 public class ModelServerImpl implements ModelServer {
 
-    @Inject
-    ServerRepository userRepository;
-    public ModelServerImpl(){
-        App.getComponent().inject(this);
+    private ServerRepository userRepository;
+    public ModelServerImpl(ServerRepository userRepository){
+        this.userRepository=userRepository;
     }
 
     @Override
@@ -38,6 +34,13 @@ public class ModelServerImpl implements ModelServer {
     @Override
     public Observable<User> updateUser(User user) {
         return userRepository.updateUser(user)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<List<User>> getAllUsers() {
+        return userRepository.getAllUsers()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

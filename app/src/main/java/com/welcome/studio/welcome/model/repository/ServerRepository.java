@@ -1,9 +1,12 @@
 package com.welcome.studio.welcome.model.repository;
 
-import com.welcome.studio.welcome.model.entity.User;
+import com.welcome.studio.welcome.model.pojo.User;
 import com.welcome.studio.welcome.util.Constance;
 
+import java.util.List;
+
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 import rx.Observable;
 
@@ -19,4 +22,7 @@ public interface ServerRepository {
 
     @POST(Constance.URL.USER_UPDATE)
     Observable<User> updateUser(@Body User user);
+
+    @GET(Constance.URL.USER_GET_ALL)
+    Observable<List<User>> getAllUsers();
 }

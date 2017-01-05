@@ -1,6 +1,6 @@
 package com.welcome.studio.welcome.util;
 
-import com.welcome.studio.welcome.model.entity.ExceptionJSONInfo;
+import com.welcome.studio.welcome.model.pojo.ExceptionJSONInfo;
 import com.welcome.studio.welcome.model.repository.ServerRepositoryCreator;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class ExceptionUtil {
             exceptionJSONInfo=converter.convert(response.errorBody());
         } catch (IOException e) {
             e.printStackTrace();
-            return new ExceptionJSONInfo("netu");
+            return new ExceptionJSONInfo("cannot parse exception response");
         }
         return exceptionJSONInfo;
     }
