@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <com.subinkrishna.widget.CircularImageView
+        android:clickable="true"
+        android:id="@+id/photo"
+        android:src="@mipmap/img_avatar"
+        android:layout_width="200sp"
+        android:layout_height="200sp"
+        android:layout_centerHorizontal="true"
+        app:ci_borderWidth="2dp"
+        app:ci_borderColor="@android:color/white"
+        app:ci_placeholderBackgroundColor="@android:color/black"
+        app:ci_shadowRadius="5.0"
+        app:ci_shadowColor="#999999"/>
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:orientation="vertical"
+        android:layout_below="@+id/photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/edit_name"
+            android:hint="@string/edit_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/edit_mail"
+            android:hint="@string/edit_mail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_below="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:text="Cancel"
+            android:layout_width="100sp"
+            android:layout_height="wrap_content"
+            />
+
+        <Button
+            android:text="Go"
+            android:layout_width="100sp"
+            android:layout_height="wrap_content"
+            />
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>

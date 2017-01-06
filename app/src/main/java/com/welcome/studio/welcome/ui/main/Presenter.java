@@ -5,7 +5,7 @@ package com.welcome.studio.welcome.ui.main;
  */
 
 public interface Presenter {
-    void onCreate();
+    void onCreate(boolean isAuth);
     void onStart();
     void onResume();
     void onDestroy();

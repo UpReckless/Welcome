@@ -1,5 +1,8 @@
 package com.welcome.studio.welcome.ui.main;
 
+import com.welcome.studio.welcome.ui.registry.RegistryComponent;
+import com.welcome.studio.welcome.ui.registry.RegistryModule;
+
 import dagger.Subcomponent;
 
 /**
@@ -10,4 +13,5 @@ import dagger.Subcomponent;
 public interface MainComponent {
     void inject(MainActivity mainActivity);
     void inject(PresenterImpl presenter);
+    RegistryComponent plus(RegistryModule registryModule);
 }
