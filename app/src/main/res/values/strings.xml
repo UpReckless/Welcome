@@ -7,4 +7,7 @@
     <string name="pay">Pay</string>
     <string name="edit_name">Enter name...</string>
     <string name="edit_mail">email (optional)</string>
+    <string name="toast_error_name">Name is empty..</string>
+    <string name="toast_error_email">Email is incorrect...</string>
+    <string name="toast_error_connect">Internet connection faild..</string>
 </resources>

@@ -1,5 +1,7 @@
 package com.welcome.studio.welcome.model.repository;
 
+import com.welcome.studio.welcome.model.pojo.AuthRequest;
+import com.welcome.studio.welcome.model.pojo.AuthResponse;
 import com.welcome.studio.welcome.model.pojo.User;
 import com.welcome.studio.welcome.util.Constance;
 
@@ -18,7 +20,7 @@ public interface ServerRepository {
     Observable<User> regUser(@Body User user);
 
     @POST(Constance.URL.USER_AUTH)
-    Observable<String> authUser(@Body String imei);
+    Observable<AuthResponse> authUser(@Body AuthRequest authRequest);
 
     @POST(Constance.URL.USER_UPDATE)
     Observable<User> updateUser(@Body User user);

@@ -18,8 +18,19 @@ public class User {
     @JsonSerialize(as = Raiting.class)
     private Raiting raiting;
     @JsonIgnore private List<ArchivePhoto> archivePhotos;
+    private double latitude;
+    private double longitude;
+    private String city;
 
     public User(){}
+
+    public User(String nickname, String imei, String email, double latitude, double longitude) {
+        this.nickname = nickname;
+        this.imei = imei;
+        this.email = email;
+        this.latitude=latitude;
+        this.longitude=longitude;
+    }
 
     public long getId() {
         return id;
@@ -83,5 +94,29 @@ public class User {
 
     public void setArchivePhotos(List<ArchivePhoto> archivePhotos) {
         this.archivePhotos = archivePhotos;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 }

@@ -11,7 +11,7 @@ public class Constance {
     }
 
     public static class URL {
-        public static final String HOST = "http://192.168.3.112:8080/";
+        public static final String HOST = "http://192.168.0.101:8080/";
         public static final String USER_REG = "user/reg";
         public static final String USER_AUTH = "user/auth";
         public static final String USER_GET_ALL ="user/getAll" ;
@@ -26,7 +26,7 @@ public class Constance {
     }
 
     public static class IntentKeyHolder {
-        public static final String KEY_IS_FIRST = "is_first";
+        public static final String KEY_IS_AUTH = "is_auth";
     }
 
     public static class SharedPreferencesHolder {
@@ -35,11 +35,15 @@ public class Constance {
         public static final String ID = "id";
         public static final String KEY = "pref";
         public static final String PHOTO_PATH = "photopath";
+        public static final String LAT = "latitude";
+        public static final String LON = "longitude";
+        public static final String CITY="city";
     }
 
     public static class CallbackPermissionsHolder {
         public static final int REQUEST_READ_PHONE_STATE = 600;
         public static final int REQUEST_WRITE_EXTERNAL_STORAGE = 601;
+        public static final int REQUEST_LOCATION_ACCESS=602;
     }
 
     public static class FragmentTagHolder {

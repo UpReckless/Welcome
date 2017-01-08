@@ -33,25 +33,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
-    <LinearLayout
-        android:orientation="horizontal"
+
+    <Button
+        android:id="@+id/btn_go"
+        android:layout_gravity="end"
+        android:text="Go"
+        android:layout_width="100sp"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <Button
-            android:text="Cancel"
-            android:layout_width="100sp"
-            android:layout_height="wrap_content"
-            />
-
-        <Button
-            android:text="Go"
-            android:layout_width="100sp"
-            android:layout_height="wrap_content"
-            />
-
-    </LinearLayout>
-
-
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="18dp" />
 
 </RelativeLayout>

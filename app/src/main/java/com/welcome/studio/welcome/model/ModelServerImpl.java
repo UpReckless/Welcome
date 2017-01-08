@@ -1,5 +1,9 @@
 package com.welcome.studio.welcome.model;
 
+import android.support.annotation.NonNull;
+
+import com.welcome.studio.welcome.model.pojo.AuthRequest;
+import com.welcome.studio.welcome.model.pojo.AuthResponse;
 import com.welcome.studio.welcome.model.pojo.User;
 import com.welcome.studio.welcome.model.repository.ServerRepository;
 
@@ -25,8 +29,8 @@ public class ModelServerImpl implements ModelServer {
     }
 
     @Override
-    public Observable<String> authUser(String imei) {
-        return userRepository.authUser(imei)
+    public Observable<AuthResponse> authUser(@NonNull AuthRequest authRequest) {
+        return userRepository.authUser(authRequest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

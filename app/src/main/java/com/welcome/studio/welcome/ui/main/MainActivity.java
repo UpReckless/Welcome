@@ -6,13 +6,14 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.welcome.studio.welcome.R;
 import com.welcome.studio.welcome.app.App;
+import com.welcome.studio.welcome.util.Constance;
 
 import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity implements View {
     private MainComponent mainComponent;
     @Inject
-    PresenterImpl presenter;
+    Presenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +21,17 @@ public class MainActivity extends AppCompatActivity implements View {
         setContentView(R.layout.activity_main);
         mainComponent= App.getComponent().plus(new MainModule(this));
         mainComponent.inject(this);
-        presenter.onCreate(false);
+        presenter.onCreate(getIntent().getBooleanExtra(Constance.IntentKeyHolder.KEY_IS_AUTH,false));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
