@@ -19,8 +19,8 @@ public class ServerRepositoryCreator {
     }
     public static Retrofit retrofit(){
         OkHttpClient okHttpClient=new OkHttpClient.Builder()
-                .readTimeout(10, TimeUnit.SECONDS)
-                .connectTimeout(10,TimeUnit.SECONDS)
+                .readTimeout(100, TimeUnit.SECONDS)
+                .connectTimeout(100,TimeUnit.SECONDS)
                 .build();
         Retrofit.Builder builder=new Retrofit.Builder()
                 .baseUrl(Constance.URL.HOST)

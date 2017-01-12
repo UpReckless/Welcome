@@ -135,6 +135,11 @@ public class SignUp extends BaseFragment implements SignUpView {
         getActivity().finish();
     }
 
+    @Override
+    public void close() {
+        getActivity().finish();
+    }
+
     @OnClick(R.id.btn_go)
     public void onBtnGoClick(View view) {
         presenter.onBtnGoClick();

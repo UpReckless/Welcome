@@ -1,28 +1,35 @@
 package com.welcome.studio.welcome.util;
 
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.MediaStore;
+import android.graphics.Bitmap;
+import android.os.FileUriExposedException;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by Royal on 07.12.2016.
  */
 
 public class Helper {
-    public static String getPhotoPathFromGallery(Intent data, Context context) throws IOException{
-        Uri selectedImage = data.getData();
-        String[] filePathColumn = {MediaStore.Images.Media.DATA};
-        try (Cursor cursor = context.getContentResolver().query(selectedImage, filePathColumn, null, null, null)){
-            if (cursor != null) {
-                cursor.moveToFirst();
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                return cursor.getString(columnIndex);
-            }
-            throw new IOException();
+    public static String savePhotoToDirectory(Bitmap bitmap, String dir) throws IOException {
+        File pictureFile= getOutputMediaFile(dir);
+        try (FileOutputStream fos=new FileOutputStream(pictureFile)) {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 90, fos);
+            return pictureFile.getAbsolutePath();
         }
+    }
+
+    private static File getOutputMediaFile(String dir) {
+        File storeDir=new File(dir);
+        if (!storeDir.exists())
+            if (!storeDir.mkdirs())
+                throw new FileUriExposedException("Error creating file, check storage permission");
+        String time=new SimpleDateFormat("ddMMyyyy_HHmm", Locale.getDefault()).format(new Date());
+        String photoName="W_"+time+".jpg";
+        return new File(storeDir.getPath()+File.separator+photoName);
     }
 }

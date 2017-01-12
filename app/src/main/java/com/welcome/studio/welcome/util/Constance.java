@@ -3,15 +3,13 @@ package com.welcome.studio.welcome.util;
 
 import android.os.Environment;
 
-import java.io.File;
-
 public class Constance {
     public static class BackgroundImageHolder {
 
     }
 
     public static class URL {
-        public static final String HOST = "http://192.168.0.101:8080/";
+        public static final String HOST = "http://192.168.3.112:8080/";
         public static final String USER_REG = "user/reg";
         public static final String USER_AUTH = "user/auth";
         public static final String USER_GET_ALL ="user/getAll" ;
@@ -38,6 +36,7 @@ public class Constance {
         public static final String LAT = "latitude";
         public static final String LON = "longitude";
         public static final String CITY="city";
+        public static final String PHOTO_REF="photoref";
     }
 
     public static class CallbackPermissionsHolder {
@@ -47,9 +46,17 @@ public class Constance {
     }
 
     public static class FragmentTagHolder {
-
+        public static final String WALL="wall";
+        public static final String PROFILE="profile";
+        public static final String RATING="rating";
+        public static final String VIP="vip";
+        public static final String SEARCH="search";
+        public static final String SETTINGS="settings";
+        public static final String HISTORY="history";
     }
     public static class AppDirectoryHolder{
-        public static final File PHOTO_DIR= new File(Environment.getExternalStorageDirectory()+"/Welcome");
+        private static final String APP_PHOTO_DIR_PATH=Environment.getExternalStorageDirectory()+"/Welcome/";
+        public static final String MAIN_PHOTO_DIR_PATH= APP_PHOTO_DIR_PATH+"Image";
+        public static final String HISTORY_PHOTO_DIR_PATH= APP_PHOTO_DIR_PATH+"Photo";
     }
 }

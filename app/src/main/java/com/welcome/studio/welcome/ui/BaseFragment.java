@@ -1,6 +1,7 @@
 package com.welcome.studio.welcome.ui;
 
 import android.os.Bundle;
+import android.support.annotation.IntegerRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,5 +20,6 @@ public abstract class BaseFragment extends Fragment {
         return inflater.inflate(getFragmentLayout(),container,false);
     }
 
+    @IntegerRes
     protected abstract int getFragmentLayout();
 }

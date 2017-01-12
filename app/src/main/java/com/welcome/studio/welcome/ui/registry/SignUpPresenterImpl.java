@@ -40,6 +40,7 @@ import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.
 import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.LON;
 import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.NAME;
 import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.PHOTO_PATH;
+import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.PHOTO_REF;
 
 /**
  * Created by Royal on 06.01.2017.
@@ -96,13 +97,14 @@ public class SignUpPresenterImpl implements SignUpPresenter {
                                                 Log.e(TAG, taskSnapshot.toString());
                                                 user.setPhotoRef(String.valueOf(taskSnapshot.getDownloadUrl()));
                                                 user.setImei(imei);
+                                                sharedPreferences.edit().putString(PHOTO_REF,user.getPhotoRef()).apply();
                                                 modelServer.updateUser(user).subscribe(user1 -> Log.e(TAG, "successfully updated")
                                                         , e -> Log.e(TAG, e.getMessage()));
                                             });
                                 } catch (FileNotFoundException e) {
                                     e.printStackTrace();
                                 }
-                            saveSharedPreferences(user, imei, authResponse);
+                            saveSharedPreferences(user, imei, authResponse,lat,lon);
                             view.start();
                         });
             }, e -> Log.e(TAG, e.toString()));
@@ -118,14 +120,14 @@ public class SignUpPresenterImpl implements SignUpPresenter {
         });
     }
 
-    private void saveSharedPreferences(User user, String imei, AuthResponse authResponse) {
+    private void saveSharedPreferences(User user, String imei, AuthResponse authResponse, double lat, double lon) {
         sharedPreferences.edit()
                 .putString(NAME, user.getNickname())
                 .putLong(ID, user.getId())
                 .putString(IMEI, imei)
                 .putString(PHOTO_PATH, pathToPhoto)
-                .putLong(LAT, Double.doubleToLongBits(user.getLatitude()))
-                .putLong(LON, Double.doubleToLongBits(user.getLongitude()))
+                .putLong(LAT, Double.doubleToLongBits(lat))
+                .putLong(LON, Double.doubleToLongBits(lon))
                 .putString(CITY, authResponse.getCity())
                 .apply();
     }
@@ -153,6 +155,7 @@ public class SignUpPresenterImpl implements SignUpPresenter {
             case REQUEST_WRITE_EXTERNAL_STORAGE: {
                 if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED))
                     view.sendIntentToGallery();
+                else view.close();
                 break;
             }
             case REQUEST_READ_PHONE_STATE: {
@@ -163,7 +166,7 @@ public class SignUpPresenterImpl implements SignUpPresenter {
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
-                }
+                }else view.close();
             }
         }
     }

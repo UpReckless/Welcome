@@ -15,6 +15,24 @@ public class App extends Application {
         super.onCreate();
         appComponent=buildComponent();
         appComponent.inject(this);
+//        DrawerImageLoader.init(new AbstractDrawerImageLoader() {
+//            @Override
+//            public void set(ImageView imageView, Uri uri, Drawable placeholder) {
+//                Picasso.with(imageView.getContext()).load(uri).placeholder(placeholder).into(imageView);
+//            }
+//
+//            @Override
+//            public void cancel(ImageView imageView) {
+//                Picasso.with(imageView.getContext()).cancelRequest(imageView);
+//            }
+//
+//            @Override
+//            public Drawable placeholder(Context ctx, String tag) {
+//                if (DrawerImageLoader.Tags.PROFILE.name().equals(tag))
+//                    return DrawerUIUtils.getPlaceHolder(ctx);
+//                return super.placeholder(ctx,tag);
+//            }
+//        });
     }
 
     public static AppComponent getComponent(){

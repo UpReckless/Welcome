@@ -30,4 +30,6 @@ public interface SignUpView {
     void showToast(String message);
 
     void start();
+
+    void close();
 }
