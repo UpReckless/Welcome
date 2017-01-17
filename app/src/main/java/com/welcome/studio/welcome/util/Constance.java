@@ -15,6 +15,8 @@ public class Constance {
         public static final String USER_GET_ALL ="user/getAll" ;
         public static final String USER_UPDATE = "user/update";
 
+        public static final String RATING_GET="rating/get";
+
         public static final String FIREBASE_STORAGE = "gs://welcomepush-96f73.appspot.com";
         public static final String FIREBASE_DATABASE = "https://welcomepush-96f73.firebaseio.com/";
     }
@@ -35,8 +37,9 @@ public class Constance {
         public static final String PHOTO_PATH = "photopath";
         public static final String LAT = "latitude";
         public static final String LON = "longitude";
-        public static final String CITY="city";
+        public static final String TOWN="city";
         public static final String PHOTO_REF="photoref";
+        public static final String RATING="rating";
     }
 
     public static class CallbackPermissionsHolder {
@@ -52,7 +55,7 @@ public class Constance {
         public static final String VIP="vip";
         public static final String SEARCH="search";
         public static final String SETTINGS="settings";
-        public static final String HISTORY="history";
+        public static final String CITY="city";
     }
     public static class AppDirectoryHolder{
         private static final String APP_PHOTO_DIR_PATH=Environment.getExternalStorageDirectory()+"/Welcome/";

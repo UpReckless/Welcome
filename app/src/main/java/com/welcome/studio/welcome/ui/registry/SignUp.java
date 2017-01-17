@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
@@ -46,6 +47,10 @@ public class SignUp extends BaseFragment implements SignUpView {
     EditText edName;
     @Bind(R.id.edit_mail)
     EditText edMail;
+    @Bind(R.id.rb_english)
+    RadioButton rbEnglish;
+    @Bind(R.id.rb_russian)
+    RadioButton rbRussian;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -149,6 +154,9 @@ public class SignUp extends BaseFragment implements SignUpView {
     public void onImgPhotoTouch(View view) {
         presenter.onImgPhotoTouch();
     }
+
+    @OnClick(R.id.view_already_registered)
+    public void onAlreadyRegisteredClick(View view){presenter.onAlreadyRegisteredClick();}
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

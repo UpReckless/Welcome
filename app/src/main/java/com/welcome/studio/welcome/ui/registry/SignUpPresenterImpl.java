@@ -13,6 +13,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.welcome.studio.welcome.R;
 import com.welcome.studio.welcome.model.ModelFirebase;
 import com.welcome.studio.welcome.model.ModelServer;
@@ -33,18 +35,8 @@ import retrofit2.adapter.rxjava.HttpException;
 
 import static com.welcome.studio.welcome.util.Constance.CallbackPermissionsHolder.REQUEST_READ_PHONE_STATE;
 import static com.welcome.studio.welcome.util.Constance.CallbackPermissionsHolder.REQUEST_WRITE_EXTERNAL_STORAGE;
-import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.CITY;
-import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.ID;
-import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.IMEI;
-import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.LAT;
-import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.LON;
-import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.NAME;
-import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.PHOTO_PATH;
-import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.PHOTO_REF;
+import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.*;
 
-/**
- * Created by Royal on 06.01.2017.
- */
 
 public class SignUpPresenterImpl implements SignUpPresenter {
     private static final String TAG = "SignUpPresenter";
@@ -69,7 +61,7 @@ public class SignUpPresenterImpl implements SignUpPresenter {
     @Override
     public void onBtnGoClick() {
         if (checkParams(view.getEdName(), view.getEdEmail()))
-            if (view.permissionCheck(Manifest.permission.READ_PHONE_STATE)) {
+            if (view.permissionCheck(Manifest.permission.READ_PHONE_STATE) && view.permissionCheck(Manifest.permission.ACCESS_COARSE_LOCATION)) {
                 try {
                     Location location = locationService.getLocation();
                     registry(view.getImei(), view.getEdName(), view.getEdEmail(), location.getLatitude(), location.getLongitude());
@@ -97,14 +89,14 @@ public class SignUpPresenterImpl implements SignUpPresenter {
                                                 Log.e(TAG, taskSnapshot.toString());
                                                 user.setPhotoRef(String.valueOf(taskSnapshot.getDownloadUrl()));
                                                 user.setImei(imei);
-                                                sharedPreferences.edit().putString(PHOTO_REF,user.getPhotoRef()).apply();
+                                                sharedPreferences.edit().putString(PHOTO_REF, user.getPhotoRef()).apply();
                                                 modelServer.updateUser(user).subscribe(user1 -> Log.e(TAG, "successfully updated")
                                                         , e -> Log.e(TAG, e.getMessage()));
                                             });
                                 } catch (FileNotFoundException e) {
                                     e.printStackTrace();
                                 }
-                            saveSharedPreferences(user, imei, authResponse,lat,lon);
+                            saveSharedPreferences(user, imei, authResponse, lat, lon);
                             view.start();
                         });
             }, e -> Log.e(TAG, e.toString()));
@@ -120,16 +112,22 @@ public class SignUpPresenterImpl implements SignUpPresenter {
         });
     }
 
-    private void saveSharedPreferences(User user, String imei, AuthResponse authResponse, double lat, double lon) {
-        sharedPreferences.edit()
-                .putString(NAME, user.getNickname())
-                .putLong(ID, user.getId())
-                .putString(IMEI, imei)
-                .putString(PHOTO_PATH, pathToPhoto)
-                .putLong(LAT, Double.doubleToLongBits(lat))
-                .putLong(LON, Double.doubleToLongBits(lon))
-                .putString(CITY, authResponse.getCity())
-                .apply();
+    private void saveSharedPreferences(User user, String imei, AuthResponse authResponse, double lat, double lon){
+        try {
+            String rating = new ObjectMapper().writeValueAsString(user.getRating());
+            sharedPreferences.edit()
+                    .putString(NAME, user.getNickname())
+                    .putLong(ID, user.getId())
+                    .putString(IMEI, imei)
+                    .putString(PHOTO_PATH, pathToPhoto)
+                    .putLong(LAT, Double.doubleToLongBits(lat))
+                    .putLong(LON, Double.doubleToLongBits(lon))
+                    .putString(TOWN, authResponse.getCity())
+                    .putString(RATING, rating)
+                    .apply();
+        }catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean checkParams(String name, String email) {
@@ -166,7 +164,7 @@ public class SignUpPresenterImpl implements SignUpPresenter {
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
-                }else view.close();
+                } else view.close();
             }
         }
     }
@@ -186,5 +184,10 @@ public class SignUpPresenterImpl implements SignUpPresenter {
                 }
             }
         }
+    }
+
+    @Override
+    public void onAlreadyRegisteredClick() {
+        view.showToast("popzje sdelau :)");
     }
 }

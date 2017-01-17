@@ -14,4 +14,6 @@ public interface SignUpPresenter {
     void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults);
 
     void onActivityResult(int requestCode, int resultCode, Intent data);
+
+    void onAlreadyRegisteredClick();
 }

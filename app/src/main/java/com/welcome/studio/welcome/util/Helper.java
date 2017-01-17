@@ -3,6 +3,8 @@ package com.welcome.studio.welcome.util;
 import android.graphics.Bitmap;
 import android.os.FileUriExposedException;
 
+import com.welcome.studio.welcome.model.pojo.Rating;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,5 +33,9 @@ public class Helper {
         String time=new SimpleDateFormat("ddMMyyyy_HHmm", Locale.getDefault()).format(new Date());
         String photoName="W_"+time+".jpg";
         return new File(storeDir.getPath()+File.separator+photoName);
+    }
+
+    public static double countRating(Rating rating){ //mock
+        return rating.getLikeCount()+rating.getPostCount()+rating.getWillcomeCount()+rating.getVippostCount();
     }
 }

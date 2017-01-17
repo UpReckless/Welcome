@@ -3,19 +3,19 @@ package com.welcome.studio.welcome.model.pojo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
-public class Raiting {
+public class Rating {
 
     private long id;
     @JsonProperty("user")
     private User user;
-    private Long likeCount;
-    private Long willcomeCount;
-    private Integer postCount;
-    private Integer vippostCount;
+    private long likeCount;
+    private long willcomeCount;
+    private long postCount;
+    private long vippostCount;
 
-    public Raiting(){}
+    public Rating(){}
 
-    public Raiting(User user, Long likeCount, Long willcomeCount, Integer postCount, Integer vippostCount) {
+    public Rating(User user, long likeCount, long willcomeCount, long postCount,long vippostCount) {
         this.user = user;
         this.likeCount = likeCount;
         this.willcomeCount = willcomeCount;
@@ -39,7 +39,7 @@ public class Raiting {
         this.user = user;
     }
 
-    public Long getLikeCount() {
+    public long getLikeCount() {
         return likeCount;
     }
 
@@ -47,7 +47,7 @@ public class Raiting {
         this.likeCount = likeCount;
     }
 
-    public Long getWillcomeCount() {
+    public long getWillcomeCount() {
         return willcomeCount;
     }
 
@@ -55,7 +55,7 @@ public class Raiting {
         this.willcomeCount = willcomeCount;
     }
 
-    public Integer getPostCount() {
+    public long getPostCount() {
         return postCount;
     }
 
@@ -63,7 +63,7 @@ public class Raiting {
         this.postCount = postCount;
     }
 
-    public Integer getVippostCount() {
+    public long getVippostCount() {
         return vippostCount;
     }
 

@@ -1,8 +1,11 @@
 package com.welcome.studio.welcome.ui.main;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.IntegerRes;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -26,17 +29,29 @@ import java.io.File;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-
 public class MainActivity extends AppCompatActivity implements View, AccountHeader.OnAccountHeaderProfileImageListener {
     private MainComponent mainComponent;
     @Inject
     Presenter presenter;
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
+
     private Drawer drawer;
     private AccountHeader accountHeader;
+    private Target target=new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            presenter.onBitmapLoaded(bitmap,from);
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +59,13 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
         setContentView(R.layout.activity_main);
         mainComponent = App.getComponent().plus(new MainModule(this));
         mainComponent.inject(this);
-        ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
-        assert getSupportActionBar() != null;
-        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
-        presenter.onCreate(getIntent().getBooleanExtra(Constance.IntentKeyHolder.KEY_IS_AUTH, false));
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        presenter.onStart(getIntent().getBooleanExtra(Constance.IntentKeyHolder.KEY_IS_AUTH, false));
     }
 
     @Override
@@ -80,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
 
 
     @Override
-    public void loadProfileImage(Picasso.Listener listener, Target target, String photoPath) {
+    public void loadProfileImage(Picasso.Listener listener, String photoPath) {
         new Picasso.Builder(this).listener(listener).build()
                 .load(new File(photoPath))
                 .transform(new CircleTransform())
@@ -88,20 +105,20 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
     }
 
     @Override
-    public void loadProfileImage(Target target, Uri uri) {
+    public void loadProfileImage( Uri uri) {
         Picasso.with(this).load(uri).memoryPolicy(MemoryPolicy.NO_STORE).transform(new CircleTransform()).into(target);
     }
 
     @Override
-    public void loadProfileImage(Target target, @DrawableRes int res) {
+    public void loadProfileImage(@DrawableRes int res) {
         Picasso.with(this).load(res).transform(new CircleTransform()).into(target);
     }
 
     @Override
     public void updateProfile(IProfile profile) {
         accountHeader.updateProfile(profile);
-
     }
+
 
     @Override
     public void onBackPressed() {
@@ -114,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
     private void initDrawer() {
         drawer = new DrawerBuilder()
                 .withActivity(this)
-                .withToolbar(toolbar)
                 .withAccountHeader(accountHeader)
                 .withActionBarDrawerToggle(true)
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
@@ -161,5 +177,17 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
         drawer.deselect();
         drawer.closeDrawer();
         return presenter.onHeaderClick(view);
+    }
+    public void setToolbarToDrawer(Toolbar toolbar, @IntegerRes int title){
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.mipmap.ic_menu_black_24dp);
+        toolbar.setTitle(title);
+        drawer.setToolbar(this,toolbar);
+    }
+    public void setToolbarToDrawer(Toolbar toolbar, String title){
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.mipmap.ic_menu_black_24dp);
+        toolbar.setTitle(title);
+        drawer.setToolbar(this,toolbar);
     }
 }

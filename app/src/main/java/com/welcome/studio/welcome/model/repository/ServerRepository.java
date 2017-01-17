@@ -2,6 +2,7 @@ package com.welcome.studio.welcome.model.repository;
 
 import com.welcome.studio.welcome.model.pojo.AuthRequest;
 import com.welcome.studio.welcome.model.pojo.AuthResponse;
+import com.welcome.studio.welcome.model.pojo.Rating;
 import com.welcome.studio.welcome.model.pojo.User;
 import com.welcome.studio.welcome.util.Constance;
 
@@ -10,6 +11,7 @@ import java.util.List;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import rx.Observable;
 
 /**
@@ -27,4 +29,7 @@ public interface ServerRepository {
 
     @GET(Constance.URL.USER_GET_ALL)
     Observable<List<User>> getAllUsers();
+
+    @GET(Constance.URL.RATING_GET+"{id}")
+    Observable<Rating> getRating(@Path("id") long id);
 }

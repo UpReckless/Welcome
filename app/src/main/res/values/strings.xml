@@ -6,9 +6,19 @@
     <string name="rating">Rating</string>
     <string name="vip">Vip</string>
     <string name="edit_name">Enter name…</string>
-    <string name="edit_mail">email (optional)</string>
+    <string name="edit_mail">Email(optional)…</string>
     <string name="toast_error_name">Name is empty..</string>
     <string name="toast_error_email">Email is incorrect…</string>
     <string name="toast_error_connect">Internet connection faild..</string>
     <string name="settings">Settings</string>
+    <string name="likes">Likes:</string>
+    <string name="posts">Posts:</string>
+    <string name="come">Come:</string>
+    <string name="profile_view_vip">Vip:</string>
+    <string name="sign_up">Sign up</string>
+    <string name="language">Language:</string>
+    <string name="english">English</string>
+    <string name="russian">Русский</string>
+    <string name="already_registered">Already registered? Click here</string>
+    <string name="today">Today</string>
 </resources>

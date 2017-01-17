@@ -15,8 +15,8 @@ public class User {
     @JsonIgnore
     private String photoPath;
     private String imei;
-    @JsonSerialize(as = Raiting.class)
-    private Raiting raiting;
+    @JsonSerialize(as = Rating.class)
+    private Rating rating;
     @JsonIgnore private List<ArchivePhoto> archivePhotos;
     private double latitude;
     private double longitude;
@@ -80,12 +80,12 @@ public class User {
         this.imei = imei;
     }
 
-    public Raiting getRaiting() {
-        return raiting;
+    public Rating getRating() {
+        return rating;
     }
 
-    public void setRaiting(Raiting raiting) {
-        this.raiting = raiting;
+    public void setRating(Rating rating) {
+        this.rating = rating;
     }
 
     public List<ArchivePhoto> getArchivePhotos() {

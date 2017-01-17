@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.welcome.studio.welcome.model.pojo.AuthRequest;
 import com.welcome.studio.welcome.model.pojo.AuthResponse;
+import com.welcome.studio.welcome.model.pojo.Rating;
 import com.welcome.studio.welcome.model.pojo.User;
 
 import java.util.List;
@@ -20,4 +21,5 @@ public interface ModelServer {
     Observable<AuthResponse> authUser(@NonNull AuthRequest authRequest);
     Observable<User> updateUser(User user);
     Observable<List<User>> getAllUsers();
+    Observable<Rating> getRating(long id);
 }
