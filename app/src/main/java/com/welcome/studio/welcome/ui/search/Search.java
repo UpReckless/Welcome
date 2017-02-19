@@ -1,6 +1,5 @@
 package com.welcome.studio.welcome.ui.search;
 
-import com.welcome.studio.welcome.R;
 import com.welcome.studio.welcome.ui.BaseFragment;
 
 /**
@@ -8,8 +7,8 @@ import com.welcome.studio.welcome.ui.BaseFragment;
  */
 
 public class Search extends BaseFragment implements SearchView {
-    @Override
-    protected int getFragmentLayout() {
-        return R.layout.fragment_search;
-    }
+//    @Override
+//    protected int getFragmentLayout() {
+//        return R.layout.fragment_search;
+//    }
 }

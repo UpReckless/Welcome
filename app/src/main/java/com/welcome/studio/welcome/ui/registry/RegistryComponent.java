@@ -1,5 +1,9 @@
 package com.welcome.studio.welcome.ui.registry;
 
+import com.welcome.studio.welcome.ui.registry.choose_screen.ChooseFragment;
+import com.welcome.studio.welcome.ui.registry.singup.first_screen.SignUp;
+import com.welcome.studio.welcome.ui.registry.singup.last_screen.NextStep;
+
 import dagger.Subcomponent;
 
 /**
@@ -9,5 +13,7 @@ import dagger.Subcomponent;
 @Subcomponent(modules = {RegistryModule.class})
 public interface RegistryComponent {
     void inject(SignUp signUp);
-    void inject(SignUpPresenterImpl signUpPresenter);
+    void inject(Registry registry);
+    void inject(ChooseFragment chooseFragment);
+    void inject(NextStep nextStep);
 }

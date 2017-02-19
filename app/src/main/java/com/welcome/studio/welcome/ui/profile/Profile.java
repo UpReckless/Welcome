@@ -1,19 +1,24 @@
 package com.welcome.studio.welcome.ui.profile;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.subinkrishna.widget.CircularImageView;
 import com.welcome.studio.welcome.R;
-import com.welcome.studio.welcome.ui.BaseFragment;
-import com.welcome.studio.welcome.ui.main.MainActivity;
+import com.welcome.studio.welcome.model.data.Rating;
+import com.welcome.studio.welcome.model.data.User;
+import com.welcome.studio.welcome.ui.BaseMainFragment;
+import com.welcome.studio.welcome.ui.BasePresenter;
+import com.welcome.studio.welcome.ui.Layout;
+import com.welcome.studio.welcome.util.Constance;
+import com.welcome.studio.welcome.util.Helper;
+import com.welcome.studio.welcome.app.Injector;
 import com.welcome.studio.welcome.util.SlidingTabLayout;
 
 import java.io.File;
@@ -21,17 +26,18 @@ import java.io.File;
 import javax.inject.Inject;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 
 /**
- * Created by Royal on 12.01.2017.
+ * Created by Royal on 12.01.2017. !
  */
-
-public class Profile extends BaseFragment implements ProfileView {
+@Layout(id=R.layout.fragment_profile)
+public class Profile extends BaseMainFragment implements ProfileView {
     @Bind(R.id.toolbar)
     Toolbar toolbar;
     @Bind(R.id.sliding_tab)
     SlidingTabLayout tabLayout;
+    @Bind(R.id.img_toolbar_header)
+    ImageView imgToolbarBackground;
     @Bind(R.id.view_pager)
     ViewPager viewPager;
     @Bind(R.id.img_main_photo)
@@ -51,66 +57,85 @@ public class Profile extends BaseFragment implements ProfileView {
 
     @Inject
     ProfilePresenter presenter;
-    @Inject
-    Context context;
-    @Inject
-    ProfileAdapter adapter;
 
-    private ProfileComponent component;
+    private User user;
 
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        component=((MainActivity)getActivity()).getComponent().plus(new ProfileModule(this));
-        component.inject(this);
-        ButterKnife.bind(this, view);
-        presenter.onCreate();
+    public static Profile newInstance(User user){
+        Profile profile=new Profile();
+        Bundle args=new Bundle();
+        args.putSerializable("user",user);
+        profile.setArguments(args);
+        return profile;
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        viewPager.setAdapter(adapter);
-        tabLayout.setDistributeEvenly(true);
-        tabLayout.setViewPager(viewPager);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        user=(User) getArguments().get("user");
+    }
+
+    @Override
+    protected Object getRouter() {
+        return getActivity();
     }
 
     @Override
     public void onStart() {
         super.onStart();
         presenter.onStart();
+        ProfileAdapter adapter = new ProfileAdapter(getChildFragmentManager(),
+                getResources().getString(R.string.today), getResources().getString(R.string.history));
+        viewPager.setAdapter(adapter);
+        tabLayout.setDistributeEvenly(true);
+        tabLayout.setViewPager(viewPager);
+    }
+
+    @NonNull
+    @Override
+    protected BasePresenter getPresenter() {
+        return presenter;
     }
 
     @Override
-    protected int getFragmentLayout() {
-        return R.layout.fragment_profile;
+    public String getFragmentTag() {
+        return Constance.FragmentTagHolder.PROFILE;
     }
 
     @Override
-    public ProfileComponent getComponent() {
-        return component;
+    protected void inject() {
+        Injector.getInstance().plus(new ProfileModule()).inject(this);
     }
 
     @Override
-    public void setData(String title, double rating, String city, long likes, long posts, long come, long vip) {
-        txtRating.setText(String.valueOf(rating));
+    protected Toolbar getToolbar() {
+        return toolbar;
+    }
+
+    @Override
+    protected String getToolbarTitle() {
+        return user.getNickname();
+    }
+
+    @Override
+    public void setData(String city, Rating rating) {
         txtCity.setText(city);
-        txtLikes.setText(String.valueOf(likes));
-        txtPosts.setText(String.valueOf(posts));
-        txtCome.setText(String.valueOf(come));
-        txtVip.setText(String.valueOf(vip));
+        updateData(rating);
     }
 
     @Override
     public void loadMainPhoto(String photoPath) {
-        Picasso.Builder builder=new Picasso.Builder(context);
-        builder.listener(((picasso, uri, exception) -> Log.e("s",exception.toString())));
-        builder.build().load(new File(photoPath)).into(mainPhoto);
+        Picasso.with(getContext()).load(R.drawable.toolbar_background).into(imgToolbarBackground);
+        Picasso.with(getContext()).load(new File(photoPath)).error(R.mipmap.img_avatar).into(mainPhoto);
+
     }
 
     @Override
-    public void setToolbar(String title) {
-        ((MainActivity)getActivity()).setToolbarToDrawer(toolbar,title);
+    public void updateData(Rating rating) {
+        txtRating.setText(String.valueOf(Helper.countRating(rating)));
+        txtLikes.setText(String.valueOf(rating.getLikeCount()));
+        txtPosts.setText(String.valueOf(rating.getPostCount()));
+        txtCome.setText(String.valueOf(rating.getWillcomeCount()));
+        txtVip.setText(String.valueOf(rating.getVippostCount()));
     }
+
 }

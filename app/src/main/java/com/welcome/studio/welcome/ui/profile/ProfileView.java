@@ -1,21 +1,15 @@
 package com.welcome.studio.welcome.ui.profile;
 
-import android.content.res.Resources;
-import android.support.v4.app.FragmentManager;
+import com.welcome.studio.welcome.model.data.Rating;
 
 /**
  * Created by Royal on 12.01.2017.
  */
 
 public interface ProfileView {
-    ProfileComponent getComponent();
-    void setData(String title, double rating,String city, long likes,long posts,long come,long vip);
+    void setData(String city, Rating rating);
 
     void loadMainPhoto(String photoPath);
 
-    void setToolbar(String title);
-
-    FragmentManager getChildFragmentManager();
-
-    Resources getResources();
+    void updateData(Rating rating);
 }

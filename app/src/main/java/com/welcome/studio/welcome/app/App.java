@@ -1,38 +1,30 @@
 package com.welcome.studio.welcome.app;
 
-import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.snappydb.DB;
+import com.snappydb.DBFactory;
+import com.snappydb.SnappydbException;
 import com.welcome.studio.welcome.model.NetworkModule;
 import com.welcome.studio.welcome.util.UtilsModule;
 
 
-public class App extends Application {
+public class App extends MultiDexApplication {
 
     private static AppComponent appComponent;
+    private DB snappyDb;
 
     @Override
     public void onCreate() {
         super.onCreate();
         appComponent=buildComponent();
         appComponent.inject(this);
-//        DrawerImageLoader.init(new AbstractDrawerImageLoader() {
-//            @Override
-//            public void set(ImageView imageView, Uri uri, Drawable placeholder) {
-//                Picasso.with(imageView.getContext()).load(uri).placeholder(placeholder).into(imageView);
-//            }
-//
-//            @Override
-//            public void cancel(ImageView imageView) {
-//                Picasso.with(imageView.getContext()).cancelRequest(imageView);
-//            }
-//
-//            @Override
-//            public Drawable placeholder(Context ctx, String tag) {
-//                if (DrawerImageLoader.Tags.PROFILE.name().equals(tag))
-//                    return DrawerUIUtils.getPlaceHolder(ctx);
-//                return super.placeholder(ctx,tag);
-//            }
-//        });
+        try {
+            snappyDb= DBFactory.open(this,"welcomedb",new Kryo());
+        } catch (SnappydbException e) {
+            e.printStackTrace();
+        }
     }
 
     public static AppComponent getComponent(){
@@ -41,9 +33,9 @@ public class App extends Application {
 
     protected AppComponent buildComponent(){
         return DaggerAppComponent.builder()
-                .appModule(new AppModule(this))
+                .appModule(new AppModule(this,snappyDb))
                 .networkModule(new NetworkModule())
-                .utilsModule(new UtilsModule(this))
+                .utilsModule(new UtilsModule())
                 .build();
     }
 }

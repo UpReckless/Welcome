@@ -1,10 +1,9 @@
 package com.welcome.studio.welcome.ui.profile;
 
-import android.content.res.Resources;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.welcome.studio.welcome.R;
 import com.welcome.studio.welcome.ui.profile.history.History;
 import com.welcome.studio.welcome.ui.profile.today.Today;
 
@@ -14,26 +13,22 @@ import com.welcome.studio.welcome.ui.profile.today.Today;
 
 public class ProfileAdapter extends FragmentStatePagerAdapter {
     private static final int PAGE_COUNT=2;
-    private Resources resources;
-    private Today today;
-    private History history;
+    private String todayTitle;
+    private String historyTitle;
 
-    public ProfileAdapter(ProfileView view) {
-        super(view.getChildFragmentManager());
-        this.resources=view.getResources();
+    public ProfileAdapter(FragmentManager fm, String todayTitle, String historyTitle) {
+        super(fm);
+        this.todayTitle=todayTitle;
+        this.historyTitle=historyTitle;
     }
 
     @Override
     public Fragment getItem(int position) {
         switch (position){
-            case 0:{
-                if (today==null) today=new Today();
-                return today;
-            }
-            case 1:{
-                if (history==null) history=new History();
-                return history;
-            }
+            case 0:
+                return new Today();
+            case 1:
+                return new History();
         }
         throw new RuntimeException("ProfileAdapter: Illegal fragment position "+position);
     }
@@ -46,8 +41,8 @@ public class ProfileAdapter extends FragmentStatePagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         switch (position){
-            case 0:return resources.getString(R.string.today);
-            case 1:return resources.getString(R.string.history);
+            case 0:return todayTitle;
+            case 1:return historyTitle;
         }
         throw new RuntimeException("ProfileAdapter: Illegal fragment position "+ position);
     }

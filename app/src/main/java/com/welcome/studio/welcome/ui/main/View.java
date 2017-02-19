@@ -1,9 +1,9 @@
 package com.welcome.studio.welcome.ui.main;
 
-import android.content.res.Resources;
 import android.net.Uri;
 import android.support.annotation.DrawableRes;
-import android.support.v4.app.FragmentManager;
+import android.support.annotation.IntegerRes;
+import android.support.v7.widget.Toolbar;
 
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.squareup.picasso.Picasso;
@@ -13,13 +13,12 @@ import com.squareup.picasso.Picasso;
  */
 
 public interface View {
-    MainComponent getComponent();
-    void setDrawer(IProfile profile);
-    FragmentManager getCurrentFragmentManager();
+    void setDrawer();
     void loadProfileImage(Picasso.Listener listener, String photoPath);
     void loadProfileImage(Uri uri);
     void loadProfileImage(@DrawableRes int res);
     void updateProfile(IProfile profile);
-    Resources getResources();
+    void setToolbarToDrawer(Toolbar toolbar, @IntegerRes int title);
+    void setToolbarToDrawer(Toolbar toolbar, String title);
 
 }

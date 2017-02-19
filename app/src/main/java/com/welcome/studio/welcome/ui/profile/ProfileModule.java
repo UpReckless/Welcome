@@ -1,5 +1,9 @@
 package com.welcome.studio.welcome.ui.profile;
 
+import com.welcome.studio.welcome.model.interactor.ProfileInteractor;
+import com.welcome.studio.welcome.model.interactor.ProfileInteractorImpl;
+import com.welcome.studio.welcome.model.repository.UserRepository;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -9,21 +13,11 @@ import dagger.Provides;
 @ProfileScope
 @Module
 public class ProfileModule {
-    private ProfileView view;
 
-    public ProfileModule(ProfileView view) {
-        this.view = view;
+    @ProfileScope
+    @Provides
+    public ProfileInteractor provideProfileInteractor(UserRepository userRepository){
+        return new ProfileInteractorImpl(userRepository);
     }
 
-    @ProfileScope
-    @Provides
-    public ProfileView provideProfileView(){return view;}
-
-    @ProfileScope
-    @Provides
-    public ProfilePresenter provideProfilePresenter(ProfileView view){return new ProfilePresenterImpl(view);}
-
-    @ProfileScope
-    @Provides
-    public ProfileAdapter provideProfileAdapter(ProfileView view){return new ProfileAdapter(view);}
 }

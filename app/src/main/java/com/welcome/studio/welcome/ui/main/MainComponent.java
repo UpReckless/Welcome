@@ -1,9 +1,13 @@
 package com.welcome.studio.welcome.ui.main;
 
+import com.welcome.studio.welcome.ui.photo.PhotoComponent;
+import com.welcome.studio.welcome.ui.photo.PhotoModule;
 import com.welcome.studio.welcome.ui.profile.ProfileComponent;
 import com.welcome.studio.welcome.ui.profile.ProfileModule;
 import com.welcome.studio.welcome.ui.registry.RegistryComponent;
 import com.welcome.studio.welcome.ui.registry.RegistryModule;
+import com.welcome.studio.welcome.ui.wall.WallComponent;
+import com.welcome.studio.welcome.ui.wall.WallModule;
 
 import dagger.Subcomponent;
 
@@ -14,7 +18,8 @@ import dagger.Subcomponent;
 @Subcomponent(modules = {MainModule.class})
 public interface MainComponent {
     void inject(MainActivity mainActivity);
-    void inject(PresenterImpl presenter);
     RegistryComponent plus(RegistryModule registryModule);
     ProfileComponent plus(ProfileModule profileModule);
+    WallComponent plus(WallModule wallModule);
+    PhotoComponent plus(PhotoModule photoModule);
 }

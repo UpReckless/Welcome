@@ -5,8 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.IntegerRes;
-import android.support.v4.app.FragmentManager;
+import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -21,25 +20,28 @@ import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.welcome.studio.welcome.R;
-import com.welcome.studio.welcome.app.App;
+import com.welcome.studio.welcome.model.data.User;
+import com.welcome.studio.welcome.ui.photo.Photo;
+import com.welcome.studio.welcome.ui.profile.Profile;
+import com.welcome.studio.welcome.ui.registry.Registry;
+import com.welcome.studio.welcome.ui.wall.Wall;
 import com.welcome.studio.welcome.util.CircleTransform;
-import com.welcome.studio.welcome.util.Constance;
+import com.welcome.studio.welcome.app.Injector;
 
 import java.io.File;
 
 import javax.inject.Inject;
 
-public class MainActivity extends AppCompatActivity implements View, AccountHeader.OnAccountHeaderProfileImageListener {
-    private MainComponent mainComponent;
+public class MainActivity extends AppCompatActivity implements View, AccountHeader.OnAccountHeaderProfileImageListener, MainRouter {
     @Inject
     Presenter presenter;
 
     private Drawer drawer;
     private AccountHeader accountHeader;
-    private Target target=new Target() {
+    private Target target = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-            presenter.onBitmapLoaded(bitmap,from);
+            presenter.onBitmapLoaded(bitmap, from);
         }
 
         @Override
@@ -57,44 +59,27 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mainComponent = App.getComponent().plus(new MainModule(this));
-        mainComponent.inject(this);
-
+        Injector.getInstance().plus(new MainModule(this)).inject(this);
+        presenter.setRouter(this);
+        presenter.create();
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        presenter.onStart(getIntent().getBooleanExtra(Constance.IntentKeyHolder.KEY_IS_AUTH, false));
-    }
-
-    @Override
-    public MainComponent getComponent() {
-        return mainComponent;
-    }
-
-    @Override
-    public void setDrawer(IProfile profile) {
+    public void setDrawer() {
         accountHeader = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withOnAccountHeaderProfileImageListener(this)
                 .withHeaderBackground(R.drawable.drawer_header)
                 .withSelectionListEnabled(false)
-                .addProfiles(profile)
                 .build();
         accountHeader.getHeaderBackgroundView().setOnClickListener((v -> {
             drawer.deselect();
             drawer.closeDrawer();
-            presenter.onHeaderClick(v);
+//            Profile profileFrg=Profile.getInstance();
+//            getSupportFragmentManager().beginTransaction().replace(R.id.container,profile,profile.getFragmentTag).commit();
         }));
         initDrawer();
     }
-
-    @Override
-    public FragmentManager getCurrentFragmentManager() {
-        return getSupportFragmentManager();
-    }
-
 
     @Override
     public void loadProfileImage(Picasso.Listener listener, String photoPath) {
@@ -105,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
     }
 
     @Override
-    public void loadProfileImage( Uri uri) {
+    public void loadProfileImage(Uri uri) {
         Picasso.with(this).load(uri).memoryPolicy(MemoryPolicy.NO_STORE).transform(new CircleTransform()).into(target);
     }
 
@@ -116,7 +101,9 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
 
     @Override
     public void updateProfile(IProfile profile) {
-        accountHeader.updateProfile(profile);
+        if (accountHeader.getProfiles().size() == 0)
+            accountHeader.addProfiles(profile);
+        else accountHeader.updateProfile(profile);
     }
 
 
@@ -128,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
             super.onBackPressed();
     }
 
+
     private void initDrawer() {
         drawer = new DrawerBuilder()
                 .withActivity(this)
@@ -135,7 +123,8 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
                 .withActionBarDrawerToggle(true)
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
                     drawer.closeDrawer();
-                    return presenter.onDrawerItemCLick(view, position, drawerItem);
+                    presenter.onDrawerItemCLick(position, drawerItem);
+                    return true;
                 })
                 .addDrawerItems(new PrimaryDrawerItem()
                                 .withName(R.string.wall)
@@ -169,25 +158,74 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
     public boolean onProfileImageClick(android.view.View view, IProfile profile, boolean current) {
         drawer.deselect();
         drawer.closeDrawer();
-        return presenter.onHeaderClick(view);
+        presenter.onProfileClick();
+        return true;
     }
 
     @Override
     public boolean onProfileImageLongClick(android.view.View view, IProfile profile, boolean current) {
         drawer.deselect();
         drawer.closeDrawer();
-        return presenter.onHeaderClick(view);
+        presenter.onProfileClick();
+        return true;
     }
-    public void setToolbarToDrawer(Toolbar toolbar, @IntegerRes int title){
+
+    @Override
+    public void setToolbarToDrawer(Toolbar toolbar, @StringRes int title) {
         setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(R.mipmap.ic_menu_black_24dp);
-        toolbar.setTitle(title);
-        drawer.setToolbar(this,toolbar);
+        if (getSupportActionBar() != null && toolbar != null && drawer != null) {
+            toolbar.setNavigationIcon(R.mipmap.ic_menu_black_24dp);
+            toolbar.setTitle(title);
+            drawer.setToolbar(this, toolbar);
+        }
     }
-    public void setToolbarToDrawer(Toolbar toolbar, String title){
+
+    @Override
+    public void setToolbarToDrawer(Toolbar toolbar, String title) {
         setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(R.mipmap.ic_menu_black_24dp);
-        toolbar.setTitle(title);
-        drawer.setToolbar(this,toolbar);
+        if (getSupportActionBar() != null) {
+            toolbar.setNavigationIcon(R.mipmap.ic_menu_black_24dp);
+            toolbar.setTitle(title);
+            if (drawer != null)
+                drawer.setToolbar(this, toolbar);
+        }
+    }
+
+    @Override
+    public void navigateFromRegistry() {
+        presenter.start();
+    }
+
+    @Override
+    public void navigateToWall() {
+        Wall wall = Wall.newInstance();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, wall, wall.getFragmentTag())
+                .commitAllowingStateLoss();
+    }
+
+    @Override
+    public void navigateToRegistry() {
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.container, new Registry(), null)
+                .commitAllowingStateLoss();
+    }
+
+    @Override
+    public void navigateToProfile(User user) {
+        Profile profile = Profile.newInstance(user);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, profile, profile.getTag())
+                .commitAllowingStateLoss();
+
+    }
+
+    @Override
+    public void navigateToPhoto() {
+        Photo photo=Photo.newInstance();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container,photo,photo.getTag())
+                .addToBackStack(null)
+                .commitAllowingStateLoss();
     }
 }

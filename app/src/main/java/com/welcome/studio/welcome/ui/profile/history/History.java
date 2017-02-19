@@ -1,55 +1,70 @@
 package com.welcome.studio.welcome.ui.profile.history;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.view.View;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.Toolbar;
 import android.widget.GridView;
 
 import com.welcome.studio.welcome.R;
-import com.welcome.studio.welcome.ui.BaseFragment;
-import com.welcome.studio.welcome.ui.profile.Profile;
+import com.welcome.studio.welcome.model.data.ArchivePhoto;
+import com.welcome.studio.welcome.ui.BaseMainFragment;
+import com.welcome.studio.welcome.ui.BasePresenter;
+import com.welcome.studio.welcome.ui.Layout;
+import com.welcome.studio.welcome.ui.profile.ProfileModule;
+import com.welcome.studio.welcome.app.Injector;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 
 /**
- * Created by Royal on 16.01.2017.
+ * Created by Royal on 16.01.2017. !
  */
-
-public class History extends BaseFragment implements HistoryView {
-    private HistoryComponent component;
+@Layout(id=R.layout.fragment_history)
+public class History extends BaseMainFragment implements HistoryView {
     @Bind(R.id.grid_view)
     GridView gridView;
     @Inject
-    AdapterView adapter;
-    @Inject
     HistoryPresenter presenter;
 
+    @Inject
+    HistoryAdapter adapter;
+
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        component=((Profile)getParentFragment()).getComponent().plus(new HistoryModule(this));
-        component.inject(this);
+    protected Object getRouter() {
+        return getActivity();
+    }
+
+    @NonNull
+    @Override
+    protected BasePresenter getPresenter() {
+        return presenter;
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        presenter.onActivityCreated();
+    public String getFragmentTag() {
+        return getTag();
     }
 
     @Override
-    protected int getFragmentLayout() {
-        return R.layout.fragment_history;
+    protected void inject() {
+        Injector.getInstance().plus(new ProfileModule()).inject(this);
     }
 
     @Override
-    public HistoryComponent getComponent() {
-        return component;
+    protected Toolbar getToolbar() {
+        return null;
     }
 
     @Override
-    public void setAdapter() {
-        gridView.setAdapter((HistoryAdapter)adapter);
+    protected String getToolbarTitle() {
+        return null;
+    }
+
+    @Override
+    public void setArchivePhotoListToAdapter(List<ArchivePhoto> archivePhotoList) {
+        adapter.setArchivePhotoList(archivePhotoList);
+        adapter.notifyDataSetChanged();
     }
 }

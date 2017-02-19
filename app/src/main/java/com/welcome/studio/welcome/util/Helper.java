@@ -3,7 +3,7 @@ package com.welcome.studio.welcome.util;
 import android.graphics.Bitmap;
 import android.os.FileUriExposedException;
 
-import com.welcome.studio.welcome.model.pojo.Rating;
+import com.welcome.studio.welcome.model.data.Rating;
 
 import java.io.File;
 import java.io.FileOutputStream;

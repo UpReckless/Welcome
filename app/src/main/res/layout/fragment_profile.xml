@@ -23,7 +23,6 @@
             <ImageView
                 android:id="@+id/img_toolbar_header"
                 android:scaleType="centerCrop"
-                android:src="@drawable/toolbar_background"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                  />
@@ -178,7 +177,6 @@
         <com.welcome.studio.welcome.util.SlidingTabLayout
             android:id="@+id/sliding_tab"
             android:clickable="true"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <android.support.v4.view.ViewPager

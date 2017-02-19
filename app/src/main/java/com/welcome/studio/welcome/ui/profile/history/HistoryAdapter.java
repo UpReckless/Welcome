@@ -1,9 +1,6 @@
 package com.welcome.studio.welcome.ui.profile.history;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +8,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 import com.welcome.studio.welcome.R;
+import com.welcome.studio.welcome.model.data.ArchivePhoto;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -25,43 +23,25 @@ import butterknife.ButterKnife;
  * Created by Royal on 17.01.2017.
  */
 
-public class HistoryAdapter extends BaseAdapter implements AdapterView {
-    @Inject
-    HistoryPresenter presenter;
-    @Inject
-    Context context;
+class HistoryAdapter extends BaseAdapter {
 
-    private ViewHolder viewHolder;
-    private Target target=new Target() {
-        @Override
-        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-            presenter.onBitmapLoaded(bitmap,from);
-        }
-
-        @Override
-        public void onBitmapFailed(Drawable errorDrawable) {
-
-        }
-
-        @Override
-        public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-        }
-    };
+    private Context context;
+    private List<ArchivePhoto> archivePhotoList;
 
     @Inject
-    HistoryAdapter(HistoryView view) {
-        view.getComponent().inject(this);
+    HistoryAdapter(Context context) {
+        this.context = context;
+        archivePhotoList = new ArrayList<>();
     }
 
     @Override
     public int getCount() {
-        return presenter.getCount();
+        return archivePhotoList.size();
     }
 
     @Override
-    public Object getItem(int position) {
-        return presenter.getItem(position);
+    public ArchivePhoto getItem(int position) {
+        return archivePhotoList.get(position);
     }
 
     @Override
@@ -71,38 +51,21 @@ public class HistoryAdapter extends BaseAdapter implements AdapterView {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder viewHolder;
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.history_grid_item, parent);
             viewHolder = new ViewHolder();
             convertView.setTag(viewHolder);
         } else viewHolder = (ViewHolder) convertView.getTag();
-        presenter.onGetView(position);
+        Picasso.with(context).load(getItem(position).getPhotoPath()).into(viewHolder.imageView);
         return convertView;
     }
 
-    @Override
-    public void loadImage(Picasso.Listener listener, String path) {
-        new Picasso.Builder(context).listener(listener).build()
-                .load(new File(path))
-                .into(target);
+    public void setArchivePhotoList(List<ArchivePhoto> archivePhotoList) {
+        this.archivePhotoList = archivePhotoList;
     }
 
-    @Override
-    public void loadImage(Uri uri) {
-        Picasso.with(context).load(uri).into(target);
-    }
-
-    @Override
-    public void setImage(Bitmap bitmap) {
-        viewHolder.imageView.setImageBitmap(bitmap);
-    }
-
-    @Override
-    public void refresh() {
-        notifyDataSetChanged();
-    }
-
-    private class ViewHolder {
+    class ViewHolder {
         @Bind(R.id.img_view)
         ImageView imageView;
 

@@ -1,7 +1,7 @@
 package com.welcome.studio.welcome.util;
 
-import com.welcome.studio.welcome.model.pojo.ExceptionJSONInfo;
-import com.welcome.studio.welcome.model.repository.ServerRepositoryCreator;
+import com.welcome.studio.welcome.model.data.ExceptionJSONInfo;
+import com.welcome.studio.welcome.model.RestApiCreator;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -11,12 +11,12 @@ import retrofit2.Converter;
 import retrofit2.Response;
 
 /**
- * Created by Royal on 07.11.2016.
+ * Created by Royal on 07.11.2016. !
  */
 
 public class ExceptionUtil {
     public static ExceptionJSONInfo parseEx(Response<?> response){
-        Converter<ResponseBody,ExceptionJSONInfo> converter= ServerRepositoryCreator.retrofit()
+        Converter<ResponseBody,ExceptionJSONInfo> converter= RestApiCreator.retrofit()
                 .responseBodyConverter(ExceptionJSONInfo.class, new Annotation[0]);
         ExceptionJSONInfo exceptionJSONInfo;
         try {

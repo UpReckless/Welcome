@@ -21,4 +21,6 @@
     <string name="russian">Русский</string>
     <string name="already_registered">Already registered? Click here</string>
     <string name="today">Today</string>
+    <string name="take_photo">Take photo</string>
+    <string name="add_description">Добавьте описание…</string>
 </resources>

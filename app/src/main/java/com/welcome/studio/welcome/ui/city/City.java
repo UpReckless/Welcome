@@ -1,6 +1,5 @@
 package com.welcome.studio.welcome.ui.city;
 
-import com.welcome.studio.welcome.R;
 import com.welcome.studio.welcome.ui.BaseFragment;
 
 /**
@@ -8,8 +7,8 @@ import com.welcome.studio.welcome.ui.BaseFragment;
  */
 
 public class City extends BaseFragment implements CityView {
-    @Override
-    protected int getFragmentLayout() {
-        return R.layout.fragment_city;
-    }
+//    @Override
+//    protected int getFragmentLayout() {
+//        return R.layout.fragment_city;
+//    }
 }

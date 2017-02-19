@@ -1,6 +1,5 @@
 package com.welcome.studio.welcome.ui.vip;
 
-import com.welcome.studio.welcome.R;
 import com.welcome.studio.welcome.ui.BaseFragment;
 
 /**
@@ -8,8 +7,8 @@ import com.welcome.studio.welcome.ui.BaseFragment;
  */
 
 public class Vip extends BaseFragment implements VipView {
-    @Override
-    protected int getFragmentLayout() {
-        return R.layout.fragment_vip;
-    }
+//    @Override
+//    protected int getFragmentLayout() {
+//        return R.layout.fragment_vip;
+//    }
 }

@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import javax.inject.Inject;
+
 /**
  * Created by Royal on 08.01.2017.
  */
@@ -19,6 +21,7 @@ public class LocationService extends Service implements LocationListener {
     private Location location;
     private boolean isNetworkEnabled;
 
+    @Inject
     public LocationService(Context context){
         this.context=context;
     }

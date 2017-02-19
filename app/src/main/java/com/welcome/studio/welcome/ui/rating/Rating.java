@@ -1,6 +1,5 @@
 package com.welcome.studio.welcome.ui.rating;
 
-import com.welcome.studio.welcome.R;
 import com.welcome.studio.welcome.ui.BaseFragment;
 
 /**
@@ -8,8 +7,8 @@ import com.welcome.studio.welcome.ui.BaseFragment;
  */
 
 public class Rating extends BaseFragment implements RatingView {
-    @Override
-    protected int getFragmentLayout() {
-        return R.layout.fragment_rating;
-    }
+//    @Override
+//    protected int getFragmentLayout() {
+//        return R.layout.fragment_rating;
+//    }
 }
