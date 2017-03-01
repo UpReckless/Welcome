@@ -7,26 +7,25 @@ import java.io.Serializable;
  */
 
 public class Like implements Serializable {
-    private long id;
-    private long uId;
+    private Author author;
+    private String key;
 
     public Like() {
     }
 
-    public long getId() {
-        return id;
+    public Author getAuthor() {
+        return author;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setAuthor(Author author) {
+        this.author = author;
     }
 
-    public long getuId() {
-        return uId;
+    public String getKey() {
+        return key;
     }
 
-    public void setuId(long uId) {
-        this.uId = uId;
+    public void setKey(String key) {
+        this.key = key;
     }
-
 }

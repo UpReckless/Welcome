@@ -2,12 +2,10 @@ package com.welcome.studio.welcome.ui.wall;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 import com.welcome.studio.welcome.R;
 import com.welcome.studio.welcome.app.Injector;
@@ -17,7 +15,6 @@ import com.welcome.studio.welcome.ui.BasePresenter;
 import com.welcome.studio.welcome.ui.Layout;
 import com.welcome.studio.welcome.util.Constance;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -29,7 +26,7 @@ import butterknife.OnClick;
  * Created by @mistreckless on 12.01.2017. !
  */
 @Layout(id = R.layout.fragment_wall)
-public class Wall extends BaseMainFragment implements WallView {
+public class Wall extends BaseMainFragment implements WallView, PostAdapterListener {
     @Bind(R.id.toolbar)
     Toolbar toolbar;
     @Bind(R.id.fab)
@@ -47,12 +44,19 @@ public class Wall extends BaseMainFragment implements WallView {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(getContext());
-        postAdapter=new PostAdapter(getContext(),new ArrayList<>());
+        postAdapter=new PostAdapter(getContext(), this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(postAdapter);
+        presenter.controlPaging(recyclerView);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        presenter.destroy();
     }
 
     @Override
@@ -98,8 +102,62 @@ public class Wall extends BaseMainFragment implements WallView {
     }
 
     @Override
-    public void updateUi(List<Post> posts) {
-        postAdapter.setPostList(posts);
+    public void addPosts(List<Post> posts) {
+        postAdapter.addPosts(posts);
+    }
+
+    @Override
+    public void refreshPosts(int position) {
+        postAdapter.notifyItemInserted(position);
+    }
+
+    @Override
+    public void refreshPost(int position) {
+        postAdapter.notifyItemChanged(position);
+    }
+
+    @Override
+    public void refresh() {
         postAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void removePost(Post post) {
+        postAdapter.removePost(post);
+    }
+
+    @Override
+    public void updatePostEvent(Post post) {
+        postAdapter.updatePostEvent(post);
+    }
+
+    @Override
+    public void updatePostView(Post post, int position) {
+        postAdapter.updatePostView(post, position);
+    }
+
+    @Override
+    public void likeClicked(Post post, int position) {
+        presenter.likeClicked(post,position);
+    }
+
+    @Override
+    public void willcomeClicked(Post post, int position) {
+        presenter.willcomeClicked(post, position);
+    }
+
+    @Override
+    public void reportClicked(Post post, int position) {
+        presenter.reportClicked(post, position);
+    }
+
+    @Override
+    public void commentClicked(Post post) {
+        presenter.commentClicked(post);
+    }
+
+    @Override
+    public void userThumbClicked(Post post) {
+
     }
 }

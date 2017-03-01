@@ -1,19 +1,19 @@
 package com.welcome.studio.welcome.model.data;
 
+import com.google.firebase.database.Exclude;
 import com.welcome.studio.welcome.util.Constance;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Royal on 12.02.2017. !
  */
 
 public class Post implements Serializable {
-    private long id;
-    private long userId;
-    private String userName;
-    private Rating userRating;
+    private String id;
+    private Author author;
     private long time;
     private String city;
     private String address;
@@ -25,44 +25,29 @@ public class Post implements Serializable {
     private Constance.ContentType contentType;
     private String contentPath;
     private String contentRef;
-    private Actions actions;
     private double offset;
     private long deleteTime;
     private List<String> tags;
     private String country;
+    private Map<String,Like> likes;
+    private Map<String,Willcome> willcomes;
+    private Map<String,Report> reports;
+    private Map<String,CommentModel> comments;
+    @Exclude
+    private boolean isLiked;
+    @Exclude
+    private boolean isWillcomed;
+    @Exclude
+    private boolean isReported;
 
     public Post(){}
 
-    public long getId() {
-        return id;
+    public Author getAuthor() {
+        return author;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public Rating getUserRating() {
-        return userRating;
-    }
-
-    public void setUserRating(Rating userRating) {
-        this.userRating = userRating;
+    public void setAuthor(Author author) {
+        this.author = author;
     }
 
     public String getCity() {
@@ -169,14 +154,6 @@ public class Post implements Serializable {
         this.description = description;
     }
 
-    public Actions getActions() {
-        return actions;
-    }
-
-    public void setActions(Actions actions) {
-        this.actions = actions;
-    }
-
     public double getOffset() {
         return offset;
     }
@@ -191,5 +168,72 @@ public class Post implements Serializable {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public Map<String, Like> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Map<String, Like> likes) {
+        this.likes = likes;
+    }
+
+    public Map<String,Willcome> getWillcomes() {
+        return willcomes;
+    }
+
+    public void setWillcomes(Map<String,Willcome> willcomes) {
+        this.willcomes = willcomes;
+    }
+
+    public Map<String,Report> getReports() {
+        return reports;
+    }
+
+    public void setReports(Map<String,Report> reports) {
+        this.reports = reports;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Map<String,CommentModel> getComments() {
+        return comments;
+    }
+
+    public void setComments(Map<String, CommentModel> comments) {
+        this.comments = comments;
+    }
+
+    @Exclude
+    public boolean isLiked() {
+        return isLiked;
+    }
+
+    public void setLiked(boolean liked) {
+        isLiked = liked;
+    }
+
+    @Exclude
+    public boolean isWillcomed() {
+        return isWillcomed;
+    }
+
+    public void setWillcomed(boolean willcomed) {
+        isWillcomed = willcomed;
+    }
+
+    @Exclude
+    public boolean isReported() {
+        return isReported;
+    }
+
+    public void setReported(boolean reported) {
+        isReported = reported;
     }
 }

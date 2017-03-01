@@ -9,6 +9,7 @@ import android.os.Environment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.upreckless.support.portraitcamerasupport.CameraSupport;
+import com.welcome.studio.welcome.model.data.Author;
 import com.welcome.studio.welcome.model.data.Post;
 import com.welcome.studio.welcome.model.data.User;
 import com.welcome.studio.welcome.util.Constance;
@@ -57,9 +58,7 @@ public class PhotoRepositoryImpl implements PhotoRepository {
         post.setAddress(address.getThoroughfare());
         post.setLat(location.getLatitude());
         post.setLon(location.getLongitude());
-        post.setUserId(user.getId());
-        post.setUserName(user.getNickname());
-        post.setUserRating(user.getRating());
+        post.setAuthor(new Author(user.getId(),user.getNickname(),user.getRating(),user.getPhotoRef()));
         String cachePost = new ObjectMapper().writeValueAsString(post);
         spf.edit().putString(POST, cachePost).apply();
         return post;

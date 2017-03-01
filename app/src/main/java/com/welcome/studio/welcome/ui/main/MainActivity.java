@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -20,7 +21,9 @@ import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.welcome.studio.welcome.R;
+import com.welcome.studio.welcome.model.data.Post;
 import com.welcome.studio.welcome.model.data.User;
+import com.welcome.studio.welcome.ui.comment.Comment;
 import com.welcome.studio.welcome.ui.photo.Photo;
 import com.welcome.studio.welcome.ui.profile.Profile;
 import com.welcome.studio.welcome.ui.registry.Registry;
@@ -206,6 +209,9 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
 
     @Override
     public void navigateToRegistry() {
+        for (int i=0;i<getSupportFragmentManager().getBackStackEntryCount();i++){
+            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.container, new Registry(), null)
                 .commitAllowingStateLoss();
@@ -227,5 +233,14 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
                 .replace(R.id.container,photo,photo.getTag())
                 .addToBackStack(null)
                 .commitAllowingStateLoss();
+    }
+
+    @Override
+    public void navigateToComment(Post post) {
+        Comment comment=Comment.newInstance(post);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container,comment,comment.getTag())
+                .addToBackStack(null)
+                .commit();
     }
 }

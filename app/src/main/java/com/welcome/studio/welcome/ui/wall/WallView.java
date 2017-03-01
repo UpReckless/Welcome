@@ -8,9 +8,21 @@ import java.util.List;
  * Created by @mistreckless on 12.01.2017. !
  */
 
-public interface WallView {
+interface WallView {
 
     void setFabEnabled(Boolean enabled);
 
-    void updateUi(List<Post> post);
+    void addPosts(List<Post> posts);
+
+    void refreshPosts(int position);
+
+    void refreshPost(int position);
+
+    void refresh();
+
+    void removePost(Post post);
+
+    void updatePostEvent(Post post);
+
+    void updatePostView(Post post, int position);
 }

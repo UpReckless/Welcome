@@ -1,5 +1,7 @@
 package com.welcome.studio.welcome.app;
 
+import com.welcome.studio.welcome.ui.comment.CommentComponent;
+import com.welcome.studio.welcome.ui.comment.CommentModule;
 import com.welcome.studio.welcome.ui.main.MainComponent;
 import com.welcome.studio.welcome.ui.main.MainModule;
 import com.welcome.studio.welcome.ui.photo.PhotoComponent;
@@ -19,6 +21,7 @@ public class Injector {
     private ProfileComponent profileComponent;
     private WallComponent wallComponent;
     private PhotoComponent photoComponent;
+    private CommentComponent commentComponent;
 
     public static Injector getInstance() {
         return ourInstance;
@@ -64,5 +67,10 @@ public class Injector {
     public PhotoComponent plus(PhotoModule photoModule) {
         if (photoComponent==null) photoComponent=mainComponent.plus(photoModule);
         return photoComponent;
+    }
+
+    public CommentComponent plus(CommentModule commentModule) {
+        if (commentComponent==null)commentComponent=mainComponent.plus(commentModule);
+        return commentComponent;
     }
 }

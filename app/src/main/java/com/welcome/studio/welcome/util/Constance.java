@@ -9,7 +9,7 @@ public class Constance {
     }
 
     public static class URL {
-        public static final String HOST = "http://192.168.0.102:8080/";
+        public static final String HOST = "http://192.168.3.111:8080/";
         public static final String USER_REG = "user/reg";
         public static final String USER_AUTH = "user/auth";
         public static final String USER_GET_ALL ="user/getAll" ;

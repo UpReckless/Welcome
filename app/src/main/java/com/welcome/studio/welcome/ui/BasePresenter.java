@@ -1,7 +1,7 @@
 package com.welcome.studio.welcome.ui;
 
 /**
- * Created by Royal on 04.02.2017.
+ * Created by @mistreckless on 04.02.2017. !
  */
 
 public abstract class BasePresenter<V, R> {

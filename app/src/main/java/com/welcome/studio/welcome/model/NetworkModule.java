@@ -3,6 +3,7 @@ package com.welcome.studio.welcome.model;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.welcome.studio.welcome.model.repository.FirebaseRepository;
 import com.welcome.studio.welcome.model.repository.FirebaseRepositoryImpl;
@@ -10,7 +11,6 @@ import com.welcome.studio.welcome.model.repository.LocationRepository;
 import com.welcome.studio.welcome.model.repository.LocationRepositoryImpl;
 import com.welcome.studio.welcome.model.repository.UserRepository;
 import com.welcome.studio.welcome.model.repository.UserRepositoryImpl;
-import com.welcome.studio.welcome.util.Constance;
 
 import javax.inject.Singleton;
 
@@ -40,7 +40,7 @@ public class NetworkModule {
     @Provides
     FirebaseRepository provideFirebaseRepository() {
         return new FirebaseRepositoryImpl(FirebaseStorage.getInstance(),
-                FirebaseStorage.getInstance().getReferenceFromUrl(Constance.URL.FIREBASE_STORAGE));
+                FirebaseDatabase.getInstance());
     }
 
     @Singleton

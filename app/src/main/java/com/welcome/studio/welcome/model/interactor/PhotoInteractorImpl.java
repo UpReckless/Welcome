@@ -70,11 +70,12 @@ public class PhotoInteractorImpl implements PhotoInteractor {
     public Observable<Boolean> sharePost(String description, String[] tags, boolean dressCode, long deleteTime) {
         Post post=photoRepository.getSharedPost(description, tags, dressCode,deleteTime);
         try{
-            return firebaseRepository.uploadImage(post.getContentPath(),post.getUserId())
+            return firebaseRepository.uploadImage(post.getContentPath(),post.getAuthor().getuId())
                     .map(uri -> generatePostWithRef(uri,post))
                     .observeOn(Schedulers.io())
                     .flatMap(firebaseRepository::sharePost)
-                    .flatMap(databaseReference -> firebaseRepository.setPostTags(databaseReference,post.getTags()))
+                    .flatMap(postReference -> firebaseRepository.setPostTags(post.getCountry(),post.getCity()
+                            ,postReference.getKey(),post.getTags()))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread());
         } catch (FileNotFoundException e) {

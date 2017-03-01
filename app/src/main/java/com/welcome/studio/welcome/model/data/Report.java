@@ -6,25 +6,26 @@ import java.io.Serializable;
  * Created by @mistreckless on 15.02.2017. !
  */
 
-public class Report implements Serializable{
-    private long id;
-    private long uId;
+public class Report implements Serializable {
+    private Author author;
+    private String key;
 
-    public Report(){}
-
-    public long getId() {
-        return id;
+    public Report() {
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public Author getAuthor() {
+        return author;
     }
 
-    public long getuId() {
-        return uId;
+    public void setAuthor(Author author) {
+        this.author = author;
     }
 
-    public void setuId(long uId) {
-        this.uId = uId;
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }
