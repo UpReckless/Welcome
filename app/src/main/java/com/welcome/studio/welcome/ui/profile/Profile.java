@@ -123,9 +123,9 @@ public class Profile extends BaseMainFragment implements ProfileView {
     }
 
     @Override
-    public void loadMainPhoto(String photoPath) {
+    public void loadMainPhoto(File photoFile) {
         Picasso.with(getContext()).load(R.drawable.toolbar_background).into(imgToolbarBackground);
-        Picasso.with(getContext()).load(new File(photoPath)).error(R.mipmap.img_avatar).into(mainPhoto);
+        Picasso.with(getContext()).load(photoFile).error(R.mipmap.img_avatar).into(mainPhoto);
 
     }
 

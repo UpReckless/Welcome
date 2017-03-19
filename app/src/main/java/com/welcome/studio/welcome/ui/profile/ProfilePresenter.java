@@ -5,6 +5,8 @@ import com.welcome.studio.welcome.model.data.User;
 import com.welcome.studio.welcome.ui.BasePresenter;
 import com.welcome.studio.welcome.ui.main.MainRouter;
 
+import java.io.File;
+
 import javax.inject.Inject;
 
 /**
@@ -24,11 +26,11 @@ public class ProfilePresenter extends BasePresenter<ProfileView, MainRouter> {
     public void onStart() {
         User user=profileInteractor.getUserCache();
         getView().setData(user.getCity(),user.getRating());
-        getView().loadMainPhoto(user.getPhotoPath());
+        getView().loadMainPhoto(user.getPhotoPath()!=null? new File(user.getPhotoPath()):null);
         profileInteractor.getRating()
                 .subscribe(rating1 -> {
                     getView().updateData(rating1);
-                });
+                },e->{});
     }
 
     @Override

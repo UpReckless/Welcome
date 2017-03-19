@@ -1,10 +1,6 @@
 package com.welcome.studio.welcome.model.data;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 import java.io.Serializable;
-import java.util.List;
 
 
 public class User implements Serializable {
@@ -13,12 +9,9 @@ public class User implements Serializable {
     private String nickname;
     private String email;
     private String photoRef;
-    @JsonIgnore
     private String photoPath;
     private String imei;
-    @JsonSerialize(as = Rating.class)
     private Rating rating;
-    @JsonIgnore private List<ArchivePhoto> archivePhotos;
     private String city;
     private String token;
     private String country;
@@ -100,14 +93,6 @@ public class User implements Serializable {
 
     public void setRating(Rating rating) {
         this.rating = rating;
-    }
-
-    public List<ArchivePhoto> getArchivePhotos() {
-        return archivePhotos;
-    }
-
-    public void setArchivePhotos(List<ArchivePhoto> archivePhotos) {
-        this.archivePhotos = archivePhotos;
     }
 
     public String getCity() {

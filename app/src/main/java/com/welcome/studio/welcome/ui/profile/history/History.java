@@ -5,14 +5,11 @@ import android.support.v7.widget.Toolbar;
 import android.widget.GridView;
 
 import com.welcome.studio.welcome.R;
-import com.welcome.studio.welcome.model.data.ArchivePhoto;
+import com.welcome.studio.welcome.app.Injector;
 import com.welcome.studio.welcome.ui.BaseMainFragment;
 import com.welcome.studio.welcome.ui.BasePresenter;
 import com.welcome.studio.welcome.ui.Layout;
 import com.welcome.studio.welcome.ui.profile.ProfileModule;
-import com.welcome.studio.welcome.app.Injector;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -27,9 +24,6 @@ public class History extends BaseMainFragment implements HistoryView {
     GridView gridView;
     @Inject
     HistoryPresenter presenter;
-
-    @Inject
-    HistoryAdapter adapter;
 
     @Override
     protected Object getRouter() {
@@ -62,9 +56,9 @@ public class History extends BaseMainFragment implements HistoryView {
         return null;
     }
 
-    @Override
-    public void setArchivePhotoListToAdapter(List<ArchivePhoto> archivePhotoList) {
-        adapter.setArchivePhotoList(archivePhotoList);
-        adapter.notifyDataSetChanged();
-    }
+//    @Override
+//    public void setArchivePhotoListToAdapter(List<ArchivePhoto> archivePhotoList) {
+//        adapter.setArchivePhotoList(archivePhotoList);
+//        adapter.notifyDataSetChanged();
+//    }
 }

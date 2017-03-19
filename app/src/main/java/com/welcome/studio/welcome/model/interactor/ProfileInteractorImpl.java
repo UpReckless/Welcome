@@ -29,7 +29,7 @@ public class ProfileInteractorImpl implements ProfileInteractor {
 
     @Override
     public Observable<Rating> getRating() {
-        long id=getUserCache().getId();
+        long id=getUserCache().getRating().getId();
         return userRepository.getRating(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());

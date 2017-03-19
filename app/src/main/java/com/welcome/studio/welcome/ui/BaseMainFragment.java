@@ -35,9 +35,13 @@ public abstract class BaseMainFragment extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
         setRetainInstance(true);
         inject();
-        ((MainActivity)getActivity()).setToolbarToDrawer(getToolbar(),getToolbarTitle());
+        ((MainActivity) getActivity()).setToolbarToDrawer(getToolbar(), getToolbarTitle(), isAddedToBackStack());
         getPresenter().setView(this);
         getPresenter().setRouter(getRouter());
+    }
+
+    protected boolean isAddedToBackStack() {
+        return false;
     }
 
     protected abstract Object getRouter();

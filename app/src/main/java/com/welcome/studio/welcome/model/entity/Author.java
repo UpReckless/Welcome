@@ -1,4 +1,6 @@
-package com.welcome.studio.welcome.model.data;
+package com.welcome.studio.welcome.model.entity;
+
+import com.welcome.studio.welcome.model.data.Rating;
 
 import java.io.Serializable;
 

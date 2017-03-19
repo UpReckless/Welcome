@@ -2,22 +2,22 @@ package com.welcome.studio.welcome.model.repository;
 
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.icu.util.Calendar;
 import android.location.Address;
 import android.location.Location;
 import android.os.Environment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.upreckless.support.portraitcamerasupport.CameraSupport;
-import com.welcome.studio.welcome.model.data.Author;
 import com.welcome.studio.welcome.model.data.Post;
 import com.welcome.studio.welcome.model.data.User;
+import com.welcome.studio.welcome.model.entity.Author;
 import com.welcome.studio.welcome.util.Constance;
 import com.welcome.studio.welcome.util.Helper;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 

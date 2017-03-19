@@ -1,14 +1,16 @@
 package com.welcome.studio.welcome.ui.main;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.StringRes;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -21,19 +23,22 @@ import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.welcome.studio.welcome.R;
+import com.welcome.studio.welcome.app.Injector;
 import com.welcome.studio.welcome.model.data.Post;
 import com.welcome.studio.welcome.model.data.User;
+import com.welcome.studio.welcome.squarecamera_mock.CameraActivity;
 import com.welcome.studio.welcome.ui.comment.Comment;
-import com.welcome.studio.welcome.ui.photo.Photo;
 import com.welcome.studio.welcome.ui.profile.Profile;
 import com.welcome.studio.welcome.ui.registry.Registry;
 import com.welcome.studio.welcome.ui.wall.Wall;
 import com.welcome.studio.welcome.util.CircleTransform;
-import com.welcome.studio.welcome.app.Injector;
+import com.welcome.studio.welcome.util.Constance;
 
 import java.io.File;
 
 import javax.inject.Inject;
+
+import static com.welcome.studio.welcome.util.Constance.IntentCodeHolder.CAMERA_CODE;
 
 public class MainActivity extends AppCompatActivity implements View, AccountHeader.OnAccountHeaderProfileImageListener, MainRouter {
     @Inject
@@ -123,10 +128,14 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
         drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withAccountHeader(accountHeader)
-                .withActionBarDrawerToggle(true)
+                .withActionBarDrawerToggle(false)
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
                     drawer.closeDrawer();
                     presenter.onDrawerItemCLick(position, drawerItem);
+                    return true;
+                })
+                .withOnDrawerNavigationListener(clickedView -> {
+                    Toast.makeText(this, "Nav", Toast.LENGTH_SHORT).show();
                     return true;
                 })
                 .addDrawerItems(new PrimaryDrawerItem()
@@ -174,23 +183,38 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
     }
 
     @Override
-    public void setToolbarToDrawer(Toolbar toolbar, @StringRes int title) {
+    public void setToolbarToDrawer(Toolbar toolbar, String title, boolean isAddedToBackStack) {
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null && toolbar != null && drawer != null) {
-            toolbar.setNavigationIcon(R.mipmap.ic_menu_black_24dp);
+        if (getSupportActionBar() != null) {
+            if (drawer==null) initDrawer();
+            if (isAddedToBackStack) {
+                toolbar.setNavigationIcon(R.mipmap.ic_arrow_back_black_24dp);
+                toolbar.setNavigationOnClickListener(v -> onBackPressed());
+                drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            } else if (drawer != null) {
+                toolbar.setNavigationIcon(R.mipmap.ic_menu_black_24dp);
+                drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                drawer.setToolbar(this, toolbar);
+            }
             toolbar.setTitle(title);
-            drawer.setToolbar(this, toolbar);
         }
     }
 
     @Override
-    public void setToolbarToDrawer(Toolbar toolbar, String title) {
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            toolbar.setNavigationIcon(R.mipmap.ic_menu_black_24dp);
-            toolbar.setTitle(title);
-            if (drawer != null)
-                drawer.setToolbar(this, toolbar);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case CAMERA_CODE:{
+                if (resultCode==RESULT_OK && data !=null){
+                    Post post= (Post) data.getSerializableExtra(Constance.IntentKeyHolder.POST_KEY);
+                    Wall wall= Wall.newInstance(post);
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container,wall,wall.getFragmentTag())
+                            .commit();
+
+                }
+                break;
+            }
         }
     }
 
@@ -205,13 +229,13 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, wall, wall.getFragmentTag())
                 .commitAllowingStateLoss();
+        for (int i = 0; i < getSupportFragmentManager().getBackStackEntryCount(); i++) {
+            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
     }
 
     @Override
     public void navigateToRegistry() {
-        for (int i=0;i<getSupportFragmentManager().getBackStackEntryCount();i++){
-            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        }
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.container, new Registry(), null)
                 .commitAllowingStateLoss();
@@ -228,18 +252,15 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
 
     @Override
     public void navigateToPhoto() {
-        Photo photo=Photo.newInstance();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container,photo,photo.getTag())
-                .addToBackStack(null)
-                .commitAllowingStateLoss();
+        Intent intent=new Intent(this,CameraActivity.class);
+        startActivityForResult(intent, CAMERA_CODE);
     }
 
     @Override
     public void navigateToComment(Post post) {
-        Comment comment=Comment.newInstance(post);
+        Comment comment = Comment.newInstance(post);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container,comment,comment.getTag())
+                .replace(R.id.container, comment, comment.getTag())
                 .addToBackStack(null)
                 .commit();
     }

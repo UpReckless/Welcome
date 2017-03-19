@@ -4,17 +4,18 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.kelvinapps.rxfirebase.RxFirebaseChildEvent;
-import com.welcome.studio.welcome.model.data.Author;
 import com.welcome.studio.welcome.model.data.Like;
 import com.welcome.studio.welcome.model.data.Post;
 import com.welcome.studio.welcome.model.data.Report;
 import com.welcome.studio.welcome.model.data.User;
 import com.welcome.studio.welcome.model.data.Willcome;
+import com.welcome.studio.welcome.model.entity.Author;
 import com.welcome.studio.welcome.model.repository.FirebaseRepository;
 import com.welcome.studio.welcome.model.repository.UserRepository;
 import com.welcome.studio.welcome.ui.wall.PagingListener;
 import com.welcome.studio.welcome.ui.wall.PostAdapter;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -24,13 +25,17 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
+import static com.welcome.studio.welcome.util.Constance.ConstHolder.EMPTY_LIST_COUNT;
+import static com.welcome.studio.welcome.util.Constance.ConstHolder.MAX_POST_LIMIT;
+import static com.welcome.studio.welcome.util.Constance.ConstHolder.RETRY_COUNT;
+
 /**
  * Created by Royal on 11.02.2017. !
  */
 
 public class WallInteractorImpl implements WallInteractor {
-    private static final int LIMIT = 20;
-    private static final int EMPTY_LIST_COUNT = 0;
+
+
     private FirebaseRepository firebaseRepository;
     private UserRepository userRepository;
 
@@ -42,7 +47,10 @@ public class WallInteractorImpl implements WallInteractor {
 
     @Override
     public Observable<Boolean> controlFab() {
-        return Observable.just(true);
+        return userRepository.checkServerConnection()
+                .onErrorReturn(throwable -> false)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
@@ -53,63 +61,70 @@ public class WallInteractorImpl implements WallInteractor {
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .distinctUntilChanged()
                 .observeOn(Schedulers.io())
-                .switchMap(offset -> getPagingObservable(pagingListener, pagingListener.nextPage(offset), 0, offset, 3));
+                .switchMap(offset -> getPagingObservable(pagingListener, pagingListener.nextPage(offset), 0, offset, RETRY_COUNT));
     }
 
 
     @Override
-    public Observable<RxFirebaseChildEvent<Post>> listenPosts(int limit) {
+    public Observable<RxFirebaseChildEvent<Post>> listenPosts() {
         return Observable.just(userRepository.getUserCache())
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(Schedulers.io())
-                .flatMap(user -> firebaseRepository.listenPosts(user.getCountry(), user.getCity(), limit))
+                .flatMap(user -> firebaseRepository.listenPosts(user.getCountry(), user.getCity()))
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
-    public Observable<Boolean> incLikeCount(Post post) {
+    public Observable<Boolean> sharePost(Post post) {
+        try {
+            return firebaseRepository.uploadImage(post.getContentPath(),post.getAuthor().getuId())
+                    .doOnNext(uri -> post.setContentRef(String.valueOf(uri)))
+                    .observeOn(Schedulers.io())
+                    .flatMap(uri->firebaseRepository.sharePost(post))
+                    .flatMap(postReference -> firebaseRepository.setPostTags(post.getCountry(),post.getCity()
+                            ,postReference.getKey(),post.getTags()))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return Observable.just(false);
+        }
+    }
+
+    @Override
+    public Observable<Boolean> changeLikeCount(Post post) {
         User user = getUserCache();
-        Like like = new Like();
-        like.setAuthor(new Author(user.getId(), user.getNickname(), user.getRating(), user.getPhotoRef()));
-        return firebaseRepository.incLikeCount(post, like);
+        return userRepository.checkServerConnection()
+                .switchMap(connect -> connect ? post.isLiked() ? firebaseRepository.decLikeCount(post, findUserLike(user, post)) :
+                        firebaseRepository.incLikeCount(post, generateLike(user)) : Observable.just(false))
+                .subscribeOn(Schedulers.io())
+                .onErrorReturn(throwable -> false)
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
-    public Observable<Boolean> decLikeCount(Post post) {
-        return Observable.just(getUserCache())
-                .map(user -> findUserLike(user, post))
-                .switchMap(like -> firebaseRepository.decLikeCount(post, like));
+    public Observable<Boolean> changeWillcomeCount(Post post) {
+        User user = getUserCache();
+        return userRepository.checkServerConnection()
+                .switchMap(connect -> connect ? post.isWillcomed() ? firebaseRepository.decWillcomeCount(post, findUserWillcome(user, post)) :
+                        firebaseRepository.incWillcomeCount(post, generateWillcome(user)) : Observable.just(false))
+                .subscribeOn(Schedulers.io())
+                .onErrorReturn(throwable -> false)
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
-    @Override
-    public Observable<Boolean> incWillcomeCount(Post post) {
-        User user=getUserCache();
-        Willcome willcome=new Willcome();
-        willcome.setAuthor(new Author(user.getId(),user.getNickname(),user.getRating(),user.getPhotoRef()));
-        return firebaseRepository.incWillcomeCount(post,willcome);
-    }
 
     @Override
-    public Observable<Boolean> decWillcomeCount(Post post) {
-        return Observable.just(getUserCache())
-                .map(user -> findUserWillcome(user,post))
-                .switchMap(willcome->firebaseRepository.decWillcomeCount(post,willcome));
+    public Observable<Boolean> changeReportCount(Post post) {
+        User user = getUserCache();
+        return userRepository.checkServerConnection()
+                .switchMap(connect -> connect ? post.isWillcomed() ? firebaseRepository.decReportCount(post, findUserReport(user, post)) :
+                        firebaseRepository.incReportCount(post, generateReport(user)) : Observable.just(false))
+                .subscribeOn(Schedulers.io())
+                .onErrorReturn(throwable -> false)
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
-    @Override
-    public Observable<Boolean> incReportCount(Post post) {
-        User user=getUserCache();
-        Report report=new Report();
-        report.setAuthor(new Author(user.getId(),user.getNickname(),user.getRating(),user.getPhotoRef()));
-        return firebaseRepository.incReportCount(post,report);
-    }
-
-    @Override
-    public Observable<Boolean> decReportCount(Post post) {
-        return Observable.just(getUserCache())
-                .map(user->findUserReport(user,post))
-                .switchMap(report -> firebaseRepository.decReportCount(post,report));
-    }
 
     @Override
     public User getUserCache() {
@@ -135,7 +150,7 @@ public class WallInteractorImpl implements WallInteractor {
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     if (!subscriber.isUnsubscribed()) {
                         int position = getLastVisiblePosition(recyclerView);
-                        int updatePosition = recyclerView.getAdapter().getItemCount() - 1 - (LIMIT / 2);
+                        int updatePosition = recyclerView.getAdapter().getItemCount() - 1 - (MAX_POST_LIMIT / 2);
                         if (position >= updatePosition)
                             subscriber.onNext(recyclerView.getAdapter().getItemCount());
 
@@ -159,35 +174,56 @@ public class WallInteractorImpl implements WallInteractor {
     private PagingListener getPagingListener(RecyclerView recyclerView, User user) {
         return offset -> {
             Post latestPost = ((PostAdapter) recyclerView.getAdapter()).getItemAtPosition(offset - 1);
-            return firebaseRepository.getPosts(user.getCountry(), user.getCity(), latestPost == null ? 0 : latestPost.getTime(), LIMIT);
+            return firebaseRepository.getPosts(user.getCountry(), user.getCity(), latestPost == null ? 0 : latestPost.getTime(), MAX_POST_LIMIT);
         };
     }
 
     private Like findUserLike(User user, Post post) {
-        for (Like like :
-                post.getLikes().values()) {
-            if (user.getId() == like.getAuthor().getuId())
-                return like;
-        }
+        if (post.getLikes() != null)
+            for (Like like :
+                    post.getLikes().values()) {
+                if (user.getId() == like.getAuthor().getuId())
+                    return like;
+            }
         return null;
     }
 
-    private Willcome findUserWillcome(User user, Post post){
-        for (Willcome willcome:
-                post.getWillcomes().values()){
-            if (user.getId()==willcome.getAuthor().getuId())
-                return willcome;
-        }
+    private Like generateLike(User user) {
+        Like like = new Like();
+        like.setAuthor(new Author(user.getId(), user.getNickname(), user.getRating(), user.getPhotoRef()));
+        return like;
+    }
+
+    private Willcome findUserWillcome(User user, Post post) {
+        if (post.getWillcomes() != null)
+            for (Willcome willcome :
+                    post.getWillcomes().values()) {
+                if (user.getId() == willcome.getAuthor().getuId())
+                    return willcome;
+            }
         return null;
     }
 
-    private Report findUserReport(User user, Post post){
-        for (Report report :
-                post.getReports().values()) {
-            if (user.getId()==report.getAuthor().getuId())
-                return report;
-        }
+    private Willcome generateWillcome(User user) {
+        Willcome willcome = new Willcome();
+        willcome.setAuthor(new Author(user.getId(), user.getNickname(), user.getRating(), user.getPhotoRef()));
+        return willcome;
+    }
+
+    private Report findUserReport(User user, Post post) {
+        if (post.getReports() != null)
+            for (Report report :
+                    post.getReports().values()) {
+                if (user.getId() == report.getAuthor().getuId())
+                    return report;
+            }
         return null;
+    }
+
+    private Report generateReport(User user) {
+        Report report = new Report();
+        report.setAuthor(new Author(user.getId(), user.getNickname(), user.getRating(), user.getPhotoRef()));
+        return report;
     }
 
 }

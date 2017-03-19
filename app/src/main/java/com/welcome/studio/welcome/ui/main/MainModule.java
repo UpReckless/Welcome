@@ -13,7 +13,7 @@ import dagger.Module;
 import dagger.Provides;
 
 /**
- * Created by Royal on 30.11.2016.
+ * Created by @mistreckless on 30.11.2016. !
  */
 @Module
 @MainScope

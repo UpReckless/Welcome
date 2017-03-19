@@ -10,7 +10,7 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 /**
- * Created by Royal on 20.10.2016.
+ * Created by @mistreckless on 20.10.2016. !
  */
 public class RestApiCreator {
 
@@ -19,8 +19,8 @@ public class RestApiCreator {
     }
     public static Retrofit retrofit(){
         OkHttpClient okHttpClient=new OkHttpClient.Builder()
-                .readTimeout(100, TimeUnit.SECONDS)
-                .connectTimeout(100,TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .connectTimeout(10,TimeUnit.SECONDS)
                 .build();
         Retrofit.Builder builder=new Retrofit.Builder()
                 .baseUrl(Constance.URL.HOST)

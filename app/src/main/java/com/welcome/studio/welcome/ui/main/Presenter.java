@@ -63,6 +63,8 @@ public class Presenter {
             case 1:
                 router.navigateToWall();
                 break;
+            case 2:
+                throw new RuntimeException("Test error handling exception DONT REPORT THIS");
 
         }
     }

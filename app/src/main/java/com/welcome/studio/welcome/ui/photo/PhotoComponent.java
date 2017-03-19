@@ -1,5 +1,6 @@
 package com.welcome.studio.welcome.ui.photo;
 
+import com.welcome.studio.welcome.squarecamera_mock.CustomPhotoSettingsFragment;
 import com.welcome.studio.welcome.ui.photo.filter_screen.FilterPreview;
 import com.welcome.studio.welcome.ui.photo.preview_screen.Preview;
 import com.welcome.studio.welcome.ui.photo.settings_screen.CustomPhotoSettings;
@@ -16,4 +17,5 @@ public interface PhotoComponent {
     void inject(Preview preview);
     void inject(FilterPreview filterPreview);
     void inject(CustomPhotoSettings customPhotoSettings);
+    void inject(CustomPhotoSettingsFragment customPhotoSettingsFragment);
 }

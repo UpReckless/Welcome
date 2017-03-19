@@ -1,6 +1,7 @@
 package com.welcome.studio.welcome.model.data;
 
 import com.google.firebase.database.Exclude;
+import com.welcome.studio.welcome.model.entity.Author;
 import com.welcome.studio.welcome.util.Constance;
 
 import java.io.Serializable;
@@ -23,6 +24,7 @@ public class Post implements Serializable {
     private double lon;
     private Constance.PostType postType;
     private Constance.ContentType contentType;
+    @Exclude
     private String contentPath;
     private String contentRef;
     private double offset;
@@ -106,6 +108,7 @@ public class Post implements Serializable {
         this.time = time;
     }
 
+    @Exclude
     public String getContentPath() {
         return contentPath;
     }

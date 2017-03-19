@@ -1,7 +1,7 @@
-package com.welcome.studio.welcome.model.data;
+package com.welcome.studio.welcome.model.entity;
 
 /**
- * Created by Royal on 07.11.2016.
+ * Created by @mistreckless on 07.11.2016. !
  */
 
 public class ExceptionJSONInfo {

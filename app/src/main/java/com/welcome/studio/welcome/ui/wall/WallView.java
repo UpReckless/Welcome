@@ -22,7 +22,11 @@ interface WallView {
 
     void removePost(Post post);
 
-    void updatePostEvent(Post post);
+    void updatePost(Post post);
 
-    void updatePostView(Post post, int position);
+    void showToast(String message);
+
+    void setUserPost(Post post);
+
+    void updateUserPost(Post post);
 }

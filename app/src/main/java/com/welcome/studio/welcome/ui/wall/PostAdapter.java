@@ -45,21 +45,28 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Post post = postList.get(position);
-        Picasso.with(context).load(Uri.parse(post.getAuthor().getThumbRef())).error(R.mipmap.img_avatar).into(holder.imgThumb);
-        holder.txtRating.setText(String.valueOf(Helper.countRating(post.getAuthor().getRating())));
-        holder.txtName.setText(post.getAuthor().getName());
-        Picasso.with(context).load(Uri.parse(post.getContentRef())).into(holder.imgContent);
-        holder.txtAdress.setText(post.getAddress());
-        holder.txtLikeCount.setText(post.getLikes() != null ? String.valueOf(post.getLikes().size()) : String.valueOf(0));
-        holder.imgLike.setImageDrawable(context.getDrawable(post.isLiked() ? R.mipmap.ic_heart_grey600_36dp
-                : R.mipmap.ic_heart_outline_grey600_36dp));
-        holder.txtCommentCount.setText(post.getComments()==null?"":String.valueOf(post.getComments().size()));
+        if (post != null) {
+            if (post.getAuthor() != null) {
+                Picasso.with(context).load(post.getAuthor().getThumbRef()).error(R.mipmap.img_avatar).into(holder.imgThumb);
+                holder.txtRating.setText(String.valueOf(Helper.countRating(post.getAuthor().getRating())));
+                holder.txtName.setText(post.getAuthor().getName());
+            }
+            if (post.getContentRef() != null)
+                Picasso.with(context).load(Uri.parse(post.getContentRef())).error(R.drawable.drawer_header).into(holder.imgContent);
+            else
+                Picasso.with(context).load(R.drawable.drawer_header).into(holder.imgContent);
+            holder.txtAdress.setText(post.getAddress());
+            holder.txtLikeCount.setText(post.getLikes() != null ? String.valueOf(post.getLikes().size()) : String.valueOf(0));
+            holder.imgLike.setImageDrawable(context.getResources().getDrawable(post.isLiked() ? R.mipmap.ic_heart_grey600_36dp
+                    : R.mipmap.ic_heart_outline_grey600_36dp));
+            holder.txtCommentCount.setText(post.getComments() == null ? "" : String.valueOf(post.getComments().size()));
 
-        holder.imgLike.setOnClickListener(view -> listener.likeClicked(post, position));
-        holder.imgWillcome.setOnClickListener(v -> listener.willcomeClicked(post,position));
-        holder.imgReport.setOnClickListener(v -> listener.reportClicked(post,position));
-        holder.imgComment.setOnClickListener(v->listener.commentClicked(post));
-        holder.imgThumb.setOnClickListener(v->listener.userThumbClicked(post));
+            holder.imgLike.setOnClickListener(view -> listener.likeClicked(post));
+            holder.imgWillcome.setOnClickListener(v -> listener.willcomeClicked(post));
+            holder.imgReport.setOnClickListener(v -> listener.reportClicked(post));
+            holder.imgComment.setOnClickListener(v -> listener.commentClicked(post));
+            holder.imgThumb.setOnClickListener(v -> listener.userThumbClicked(post));
+        }
     }
 
 
@@ -68,6 +75,20 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         return postList.size();
     }
 
+    void addUserPost(Post post) {
+        postList.add(0, post);
+        notifyItemInserted(0);
+    }
+
+    void updateUserPost(Post userPost) {
+        for (int i = 0; i < postList.size(); i++) {
+            if (postList.get(i).getId() == null && postList.get(i).getAuthor().getuId() == userPost.getAuthor().getuId()) {
+                postList.set(i, userPost);
+                notifyItemChanged(i);
+                break;
+            }
+        }
+    }
 
     void addPosts(List<Post> posts) {
         postList.addAll(posts);
@@ -92,20 +113,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         }
     }
 
-    void updatePostView(Post post, int position) {
-        try {
-            postList.set(position,post);
-            notifyItemChanged(position);
-        } catch (Exception e) {
-            Log.e("PostAdapterUpdateView", e.getMessage());
-        }
-    }
-
-    void updatePostEvent(Post post) {
+    void updatePost(Post post) {
         try {
             for (int i = 0; i < postList.size(); i++) {
                 if (postList.get(i).getId().equals(post.getId())) {
-                    post.setLiked(postList.get(i).isLiked());
                     postList.set(i, post);
                     notifyItemChanged(i);
                     break;

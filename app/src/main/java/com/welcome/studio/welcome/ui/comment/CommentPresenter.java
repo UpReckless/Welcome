@@ -39,8 +39,14 @@ class CommentPresenter extends BasePresenter<CommentView, MainRouter> {
 
     @Override
     public void onStart() {
-        listenSubscription = commentInteractor.listenComments(post)
-                .subscribe(this::realTimeProvider);
+        commentInteractor.checkServerConnection()
+                .subscribe(success->{
+                    if (success)
+                        listenSubscription = commentInteractor.listenComments(post)
+                                .subscribe(this::realTimeProvider, throwable -> Log.e("CommentPres",throwable.getMessage()));
+                    else getView().showToast("Network connection failed");
+                });
+
         if (post.getComments() != null) {
             List<CommentModel> comments = new ArrayList<>(post.getComments().values());
             Collections.sort(comments, (o1, o2) -> o1.getTime() < o2.getTime() ? -1 : o2.getTime() < o1.getTime() ? 1 : 0);
@@ -77,12 +83,20 @@ class CommentPresenter extends BasePresenter<CommentView, MainRouter> {
         if (comment.isLiked())
             commentInteractor.decLikeCount(comment, post)
                     .subscribe(success -> {
+                        if (success){
+                            comment.setLiked(false);
+                            getView().updateCommentView(comment,position);
+                        }
+                        else getView().showToast("Internet connection failed");
                     });
         else commentInteractor.incLikeCount(comment, post)
                 .subscribe(success -> {
+                    if (success){
+                        comment.setLiked(true);
+                        getView().updateCommentView(comment,position);
+                    }
+                    else getView().showToast("Internet connection failed");
                 });
-        comment.setLiked(!comment.isLiked());
-        getView().updateCommentView(comment, position);
     }
 
     void likeCountClicked(CommentModel comment) {

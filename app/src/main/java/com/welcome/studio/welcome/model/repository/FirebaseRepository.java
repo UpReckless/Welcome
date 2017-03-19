@@ -33,7 +33,7 @@ public interface FirebaseRepository {
 
     Observable<List<Post>> getPosts(String country, String city, long time, int limit);
 
-    Observable<RxFirebaseChildEvent<Post>> listenPosts(String country, String city, int limit);
+    Observable<RxFirebaseChildEvent<Post>> listenPosts(String country, String city);
 
     Observable<Boolean> sendComment(Post post, CommentModel comment);
 

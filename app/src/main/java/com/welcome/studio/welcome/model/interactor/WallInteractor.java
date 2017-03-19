@@ -18,19 +18,15 @@ public interface WallInteractor {
 
     Observable<List<Post>> controlPosts(RecyclerView recyclerView);
 
-    Observable<RxFirebaseChildEvent<Post>> listenPosts(int limit);
+    Observable<RxFirebaseChildEvent<Post>> listenPosts();
 
-    Observable<Boolean> incLikeCount(Post post);
+    Observable<Boolean> sharePost(Post post);
 
-    Observable<Boolean> decLikeCount(Post post);
+    Observable<Boolean> changeLikeCount(Post post);
 
-    Observable<Boolean> incWillcomeCount(Post post);
+    Observable<Boolean> changeWillcomeCount(Post post);
 
-    Observable<Boolean> decWillcomeCount(Post post);
-
-    Observable<Boolean> incReportCount(Post post);
-
-    Observable<Boolean> decReportCount(Post post);
+    Observable<Boolean> changeReportCount(Post post);
 
     User getUserCache();
 }

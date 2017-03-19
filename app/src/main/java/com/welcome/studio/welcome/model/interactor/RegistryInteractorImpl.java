@@ -7,6 +7,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.welcome.studio.welcome.model.data.User;
+import com.welcome.studio.welcome.model.entity.RegistryRequest;
+import com.welcome.studio.welcome.model.entity.RegistryResponse;
 import com.welcome.studio.welcome.model.repository.LocationRepository;
 import com.welcome.studio.welcome.model.repository.UserRepository;
 
@@ -49,11 +51,9 @@ public class RegistryInteractorImpl implements RegistryInteractor {
 
     @Override
     public Observable<User> regNewUser(@NonNull String name, String imei) {
-        return locationRepository.getLastKnownLocation()
-                .observeOn(Schedulers.io())
-                .flatMap(locationRepository::reverseGeocodeLocation)
-                .flatMap(addresses->userRepository.registryNewUser(name,imei,
-                        addresses.get(0).getLocality(),addresses.get(0).getCountryName()))
+        return Observable.just(generateRegistryRequest(name, imei))
+                .switchMap(userRepository::registryNewUser)
+                .map(this::convertResponseToUser)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -75,4 +75,14 @@ public class RegistryInteractorImpl implements RegistryInteractor {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    private RegistryRequest generateRegistryRequest(String name,String imei){
+        RegistryRequest request=new RegistryRequest();
+        request.setName(name);
+        request.setImei(imei);
+        return request;
+    }
+
+    private User convertResponseToUser(RegistryResponse response){
+        return getUserCache(); // need to refract
+    }
 }

@@ -1,6 +1,6 @@
 package com.welcome.studio.welcome.util;
 
-import com.welcome.studio.welcome.model.data.ExceptionJSONInfo;
+import com.welcome.studio.welcome.model.entity.ExceptionJSONInfo;
 import com.welcome.studio.welcome.model.RestApiCreator;
 
 import java.io.IOException;

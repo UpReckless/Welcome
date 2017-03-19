@@ -1,5 +1,7 @@
 package com.welcome.studio.welcome.model.data;
 
+import com.welcome.studio.welcome.model.entity.Author;
+
 import java.io.Serializable;
 import java.util.Map;
 

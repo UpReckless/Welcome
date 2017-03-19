@@ -1,7 +1,6 @@
 package com.welcome.studio.welcome.ui.comment;
 
 import android.content.Context;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,10 +45,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         CommentModel comment = comments.get(position);
-        Picasso.with(context).load(Uri.parse(comment.getAuthor().getThumbRef())).error(R.mipmap.img_avatar).into(holder.imgThumb);
+        Picasso.with(context).load(comment.getAuthor().getThumbRef()).error(R.mipmap.img_avatar).into(holder.imgThumb);
         holder.txtRating.setText(String.valueOf(Helper.countRating(comment.getAuthor().getRating())));
         holder.txtName.setText(comment.getAuthor().getName());
-        holder.imgLike.setImageDrawable(context.getDrawable(comment.isLiked() ? R.mipmap.ic_heart_grey600_36dp : R.mipmap.ic_heart_outline_grey600_36dp));
+        holder.imgLike.setImageDrawable(context.getResources().getDrawable(comment.isLiked() ? R.mipmap.ic_heart_grey600_36dp : R.mipmap.ic_heart_outline_grey600_36dp));
         holder.txtLikeCount.setText(comment.getLikes() == null ? "" : String.valueOf(comment.getLikes().size()));
         holder.txtComment.setText(comment.getText());
 

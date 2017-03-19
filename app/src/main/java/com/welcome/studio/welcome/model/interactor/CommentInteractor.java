@@ -22,4 +22,6 @@ public interface CommentInteractor {
     Observable<Boolean> decLikeCount(CommentModel comment, Post post);
 
     User getUserCache();
+
+    Observable<Boolean> checkServerConnection();
 }

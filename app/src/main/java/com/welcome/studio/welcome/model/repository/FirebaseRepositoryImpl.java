@@ -1,6 +1,7 @@
 package com.welcome.studio.welcome.model.repository;
 
 import android.net.Uri;
+import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -60,8 +61,9 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
     @Override
     public Observable<Uri> uploadImage(String path, long id) throws FileNotFoundException {
         StorageReference storageReference = firebaseStorage.getReferenceFromUrl(Constance.URL.FIREBASE_STORAGE);
-        InputStream is = new FileInputStream(new File(path));
         Uri uri = Uri.parse(path);
+        InputStream is = new FileInputStream(new File(path));
+        Log.e("upload path",uri.toString());
         return RxFirebaseStorage.putStream(storageReference.child(id + "/" + uri.getLastPathSegment()), is)
                 .map(UploadTask.TaskSnapshot::getDownloadUrl)
                 .doOnNext(uri1 -> {
@@ -81,6 +83,7 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
 
     @Override
     public Observable<DatabaseReference> sharePost(Post post) {
+        Log.e("sharepost",post.toString());
         DatabaseReference postRef = firebaseDatabase.getReference("posts").child(post.getCountry()).child(post.getCity()).push();
         post.setId(postRef.getKey());
         return Observable.just(postRef.setValue(post)).map(res -> postRef);
@@ -100,9 +103,9 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
     }
 
     @Override
-    public Observable<RxFirebaseChildEvent<Post>> listenPosts(String country, String city, int limit) {
+    public Observable<RxFirebaseChildEvent<Post>> listenPosts(String country, String city) {
         return Observable.just(firebaseDatabase.getReference("posts").child(country).child(city))
-                .switchMap(postsRef -> RxFirebaseDatabase.observeChildEvent(postsRef.limitToLast(limit), DataSnapshotMapper.ofChildEvent(Post.class)));
+                .switchMap(postsRef -> RxFirebaseDatabase.observeChildEvent(postsRef, DataSnapshotMapper.ofChildEvent(Post.class)));
     }
 
     @Override
@@ -136,7 +139,7 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
                 .child(post.getId())
                 .child("likes").push();
         like.setKey(ref.getKey());
-        return Observable.just(ref.setValue(like)).map(Task::isSuccessful);
+        return Observable.just(ref.setValue(like)).map(task->true);
     }
 
     @Override
@@ -148,7 +151,7 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
                 .child(post.getId())
                 .child("likes")
                 .child(like.getKey());
-        return Observable.just(ref.removeValue()).map(Task::isSuccessful);
+        return Observable.just(ref.removeValue()).map(task->true);
     }
 
     @Override

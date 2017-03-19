@@ -12,10 +12,14 @@ import android.util.Log;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.welcome.studio.welcome.model.RestApi;
-import com.welcome.studio.welcome.model.data.AuthRequest;
-import com.welcome.studio.welcome.model.data.AuthResponse;
 import com.welcome.studio.welcome.model.data.Rating;
 import com.welcome.studio.welcome.model.data.User;
+import com.welcome.studio.welcome.model.entity.AuthRequest;
+import com.welcome.studio.welcome.model.entity.AuthResponse;
+import com.welcome.studio.welcome.model.entity.RegistryRequest;
+import com.welcome.studio.welcome.model.entity.RegistryResponse;
+import com.welcome.studio.welcome.model.entity.UpdateUserRequest;
+import com.welcome.studio.welcome.model.entity.UpdateUserResponse;
 import com.welcome.studio.welcome.util.Constance;
 import com.welcome.studio.welcome.util.Helper;
 
@@ -33,9 +37,9 @@ import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.
 import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.NAME;
 import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.PHOTO_PATH;
 import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.PHOTO_REF;
+import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.PLACE;
 import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.RATING;
 import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.TOKEN;
-import static com.welcome.studio.welcome.util.Constance.SharedPreferencesHolder.TOWN;
 
 /**
  * Created by @mistreckless on 08.02.2017. !
@@ -54,22 +58,16 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Observable<User> registryNewUser(String name,String imei,String city,String country) {
-        spf.edit()
-                .putString(IMEI, imei)
-                .putString(NAME,name)
-                .putString(TOWN,city)
-                .putString(COUNTRY,country)
-                .apply();
-        Log.e("UserRepo","threadReg "+Thread.currentThread());
-        return restApi.regUser(new User(name,imei,city,country))
-                .doOnNext(this::cacheMainUser);
+    public Observable<RegistryResponse> registryNewUser(RegistryRequest request) {
+        Log.e("UserRepo", "threadReg " + Thread.currentThread());
+        return restApi.regUser(request)
+                .doOnNext(response -> cacheMainUser(request, response));
     }
 
     @Override
-    public Observable<User> updateUser(User user) {
-        spf.edit().putString(PHOTO_REF,user.getPhotoRef()).apply();
-        return restApi.updateUser(user);
+    public Observable<UpdateUserResponse> updateUser(UpdateUserRequest request) {
+        return restApi.updateUser(request)
+                .doOnNext(response -> cacheUpdatableUser(request, response));
 
     }
 
@@ -88,11 +86,11 @@ public class UserRepositoryImpl implements UserRepository {
         String email = spf.getString(EMAIL, null);
         String photoPath = spf.getString(PHOTO_PATH, null);
         String photoRef = spf.getString(PHOTO_REF, null);
-        String city = spf.getString(TOWN, null);
-        String country=spf.getString(COUNTRY,null);
-        String token=spf.getString(TOKEN,null);
+        String token = spf.getString(TOKEN, null);
+        String city = spf.getString(PLACE, null);
+        String country = spf.getString(COUNTRY, null);
         Rating rating = getRatingFromCache();
-        return new User(id, name, email, photoRef, photoPath, imei, rating,city,token,country);
+        return new User(id, name, email, photoRef, photoPath, imei, rating, city, token, country);
     }
 
     @Override
@@ -142,12 +140,18 @@ public class UserRepositoryImpl implements UserRepository {
                 .doOnNext(this::cacheRating);
     }
 
-    private void cacheMainUser(User user) {
+    @Override
+    public Observable<Boolean> checkServerConnection() {
+        return restApi.checkServerConnection();
+    }
+
+    private void cacheMainUser(RegistryRequest request, RegistryResponse response) {
         spf.edit()
-                .putString(NAME, user.getNickname())
-                .putLong(ID, user.getId())
+                .putString(NAME, request.getName())
+                .putLong(ID, response.getId())
+                .putString(IMEI, request.getImei())
                 .apply();
-        cacheRating(user.getRating());
+        cacheRating(response.getRating());
     }
 
     private void cacheRating(Rating rating) {
@@ -170,14 +174,25 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     private void cacheAuthRequest(AuthRequest authRequest) {
-        spf.edit().putString(COUNTRY,authRequest.getCountry())
-                .putString(TOWN,authRequest.getCity())
+        spf.edit()
+                .putString(PLACE, authRequest.getCity())
+                .putString(COUNTRY, authRequest.getCountry())
                 .apply();
     }
 
     private void cacheAuthResponse(AuthResponse authResponse) {
         spf.edit()
                 .putString(TOKEN, authResponse.getToken())
+                .apply();
+    }
+
+
+    private void cacheUpdatableUser(UpdateUserRequest request, UpdateUserResponse response) {
+        spf.edit()
+                .putString(IMEI, request.getImei())
+                .putString(NAME, response.getName())
+                .putString(EMAIL, response.getEmail())
+                .putString(PHOTO_REF, response.getPhotoRef())
                 .apply();
     }
 

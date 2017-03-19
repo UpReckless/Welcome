@@ -1,4 +1,4 @@
-package com.welcome.studio.welcome.model.data;
+package com.welcome.studio.welcome.model.entity;
 
 /**
  * Created by @mistreckless on 08.01.2017. !

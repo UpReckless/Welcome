@@ -29,6 +29,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".squarecamera_mock.CameraActivity" />
+        <activity android:name=".squarecamera_mock.RuntimePermissionActivity"/>
     </application>
 
 </manifest>

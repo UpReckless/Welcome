@@ -26,4 +26,6 @@ interface CommentView {
     void updateCommentEvent(CommentModel comment);
 
     void hideKeyboard();
+
+    void showToast(String message);
 }

@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.welcome.studio.welcome.R;
@@ -64,6 +65,11 @@ public class Comment extends BaseMainFragment implements CommentView, CommentAda
         presenter.setPost((Post) getArguments().getSerializable("post"));
         presenter.controlSendView(RxTextView.textChanges(edtComment));
         presenter.controlTextChanges(RxTextView.textChanges(edtComment));
+    }
+
+    @Override
+    protected boolean isAddedToBackStack() {
+        return true;
     }
 
     protected Object getRouter() {
@@ -152,7 +158,7 @@ public class Comment extends BaseMainFragment implements CommentView, CommentAda
     @Override
     public void setSendView(boolean enabled) {
         sendEnabled=enabled;
-        imgSend.setImageDrawable(getContext().getDrawable(enabled ? R.mipmap.ic_send_grey600_36dp : R.mipmap.ic_send_grey600_36dp));
+        imgSend.setImageDrawable(getContext().getResources().getDrawable(enabled ? R.mipmap.ic_send_grey600_36dp : R.mipmap.ic_send_grey600_36dp));
     }
 
     @Override
@@ -167,5 +173,10 @@ public class Comment extends BaseMainFragment implements CommentView, CommentAda
             inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
             edtComment.setText("");
         }
+    }
+
+    @Override
+    public void showToast(String message) {
+        Toast.makeText(getContext(),message,Toast.LENGTH_SHORT).show();
     }
 }

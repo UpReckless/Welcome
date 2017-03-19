@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.welcome.studio.welcome.R;
-import com.welcome.studio.welcome.model.data.ExceptionJSONInfo;
+import com.welcome.studio.welcome.model.entity.ExceptionJSONInfo;
 import com.welcome.studio.welcome.model.interactor.RegistryInteractor;
 import com.welcome.studio.welcome.ui.BasePresenter;
 import com.welcome.studio.welcome.ui.registry.RegistryRouter;

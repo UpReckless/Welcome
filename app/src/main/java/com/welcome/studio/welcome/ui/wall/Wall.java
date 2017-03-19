@@ -2,10 +2,12 @@ package com.welcome.studio.welcome.ui.wall;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import com.welcome.studio.welcome.R;
 import com.welcome.studio.welcome.app.Injector;
@@ -38,9 +40,23 @@ public class Wall extends BaseMainFragment implements WallView, PostAdapterListe
     WallPresenter presenter;
 
     private PostAdapter postAdapter;
+    private Post post;
 
     public static Wall newInstance() {
         return new Wall();
+    }
+    public static Wall newInstance(Post post){
+        Wall wall=new Wall();
+        Bundle args=new Bundle();
+        args.putSerializable("post",post);
+        wall.setArguments(args);
+        return wall;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        post=getArguments()==null?null:(Post)getArguments().getSerializable("post");
     }
 
     @Override
@@ -50,7 +66,8 @@ public class Wall extends BaseMainFragment implements WallView, PostAdapterListe
         postAdapter=new PostAdapter(getContext(), this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(postAdapter);
-        presenter.controlPaging(recyclerView);
+        presenter.controlPaging(recyclerView,post);
+        post=null;
     }
 
     @Override
@@ -127,28 +144,38 @@ public class Wall extends BaseMainFragment implements WallView, PostAdapterListe
     }
 
     @Override
-    public void updatePostEvent(Post post) {
-        postAdapter.updatePostEvent(post);
+    public void updatePost(Post post) {
+        postAdapter.updatePost(post);
     }
 
     @Override
-    public void updatePostView(Post post, int position) {
-        postAdapter.updatePostView(post, position);
+    public void showToast(String message) {
+        Toast.makeText(getContext(),message,Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void likeClicked(Post post, int position) {
-        presenter.likeClicked(post,position);
+    public void setUserPost(Post post) {
+        postAdapter.addUserPost(post);
     }
 
     @Override
-    public void willcomeClicked(Post post, int position) {
-        presenter.willcomeClicked(post, position);
+    public void updateUserPost(Post post) {
+        postAdapter.updateUserPost(post);
     }
 
     @Override
-    public void reportClicked(Post post, int position) {
-        presenter.reportClicked(post, position);
+    public void likeClicked(Post post) {
+        presenter.likeClicked(post);
+    }
+
+    @Override
+    public void willcomeClicked(Post post) {
+        presenter.willcomeClicked(post);
+    }
+
+    @Override
+    public void reportClicked(Post post) {
+        presenter.reportClicked(post);
     }
 
     @Override

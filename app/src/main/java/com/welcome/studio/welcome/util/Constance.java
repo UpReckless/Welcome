@@ -4,12 +4,16 @@ package com.welcome.studio.welcome.util;
 import android.os.Environment;
 
 public class Constance {
-    public static class BackgroundImageHolder {
-
+    public static class ConstHolder{
+        public static final int MAX_POST_LIMIT = 20;
+        public static final int EMPTY_LIST_COUNT = 0;
+        public static final int RETRY_COUNT = 0;
     }
 
     public static class URL {
-        public static final String HOST = "http://192.168.3.111:8080/";
+        public static final String HOST = "http://wlcome.mycloud.by/";
+        public static final String CHECK_SERVER_CONNECTION="user/connection";
+
         public static final String USER_REG = "user/reg";
         public static final String USER_AUTH = "user/auth";
         public static final String USER_GET_ALL ="user/getAll" ;
@@ -24,16 +28,11 @@ public class Constance {
 
     public static class IntentCodeHolder {
         public static final int LOAD_PHOTO_FROM_GALLERY = 500;
-        public static final int ADRESS_NAME = 1;
-        public static final int ADRESS_LOCATION = 2;
+        public static final int CAMERA_CODE=501;
     }
 
     public static class IntentKeyHolder {
-        public static final String FETCH_TYPE_LOCATION="fetch_location_type";
-        public static final String LOCATION_LATITUDE="location_lat";
-        public static final String LOCATION_LONGITUDE="fetch_location_lon";
-        public static final String LOCATION_NAME="location_name";
-        public static final String LOCATION_RECEIVER="location_receiver";
+        public static final String POST_KEY="post";
     }
 
     public static class SharedPreferencesHolder {
@@ -44,7 +43,7 @@ public class Constance {
         public static final String EMAIL = "email";
         public static final String ID = "id";
         public static final String PHOTO_PATH = "photopath";
-        public static final String TOWN="city";
+        public static final String PLACE="city";
         public static final String COUNTRY="country";
         public static final String PHOTO_REF="photoref";
         public static final String RATING="rating";

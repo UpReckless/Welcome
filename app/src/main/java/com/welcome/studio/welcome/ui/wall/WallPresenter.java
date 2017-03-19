@@ -17,11 +17,17 @@ import com.welcome.studio.welcome.ui.main.MainRouter;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import dagger.Lazy;
+import rx.Observable;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+import static com.welcome.studio.welcome.util.Constance.ConstHolder.MAX_POST_LIMIT;
 
 /**
  * Created by @mistreckless on 18.01.2017. !
@@ -31,8 +37,8 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
     private WallInteractor wallInteractor;
     private Lazy<RxPermissions> rxPermissions;
     private Subscription pagingSubscription;
-    private int limit;
     private Subscription listenSubscription;
+    private Subscription controlFabSubscription;
 
     @Inject
     WallPresenter(WallInteractor wallInteractor, Lazy<RxPermissions> rxPermissions) {
@@ -42,10 +48,10 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
 
     @Override
     public void onStart() {
-        wallInteractor.controlFab()
+        controlFabSubscription = wallInteractor.controlFab()
                 .subscribe(getView()::setFabEnabled);
         if (listenSubscription != null && listenSubscription.isUnsubscribed())
-            listenSubscription = wallInteractor.listenPosts(limit)
+            listenSubscription = wallInteractor.listenPosts()
                     .subscribe(this::realTimeProvider);
 
     }
@@ -56,6 +62,8 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
             pagingSubscription.unsubscribe();
         if (listenSubscription != null)
             listenSubscription.unsubscribe();
+        if (controlFabSubscription != null)
+            controlFabSubscription.unsubscribe();
     }
 
     void onFabClick() {
@@ -67,59 +75,55 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
     }
 
 
-    void controlPaging(RecyclerView recyclerView) {
+    void controlPaging(RecyclerView recyclerView, Post post) {
         pagingSubscription = wallInteractor.controlPosts(recyclerView)
                 .subscribe(postList -> {
-                    List<Post> posts = convertPostsToAdapter(postList);
-
-                    getView().addPosts(posts);
-                    getView().refreshPosts(recyclerView.getAdapter().getItemCount() - posts.size());
-
-                    limit += posts.size();
-                    if (posts.size() > 0) {
-                        if (listenSubscription != null) listenSubscription.unsubscribe();
-                        listenSubscription = wallInteractor.listenPosts(limit)
-                                .subscribe(this::realTimeProvider);
-                    }
+                    Collections.reverse(postList);
+                    User user = wallInteractor.getUserCache();
+                    convertPostsToAdapter(postList, user.getId())
+                            .subscribe(posts -> {
+                                getView().addPosts(posts);
+                                getView().refreshPosts(recyclerView.getAdapter().getItemCount() - posts.size());
+                                if (listenSubscription != null)
+                                    listenSubscription.unsubscribe();
+                                listenSubscription = wallInteractor.listenPosts()
+                                        .subscribe(this::realTimeProvider);
+                            }, throwable -> {
+                                Log.e("ControlPagin", throwable.getMessage());
+                            });
                 });
+        if (post != null) {
+            getView().setUserPost(post);
+            wallInteractor.sharePost(post)
+                    .subscribe(success -> {
+                        Log.e("postShare", String.valueOf(success));
+                    }, throwable -> {
+                        Log.e("SharePost", "Unsuccessfully upload");
+                    });
+        }
 
     }
 
-    void likeClicked(Post post, int position) {
-        if (post.isLiked())
-            wallInteractor.decLikeCount(post)
-                    .subscribe(success -> {
-                    });
-        else
-            wallInteractor.incLikeCount(post)
-                    .subscribe(updLike -> {
-                    });
-        post.setLiked(!post.isLiked());
-        getView().updatePostView(post, position);
-    }
-
-    void willcomeClicked(Post post, int position) {
-        if (post.isWillcomed())
-            wallInteractor.decWillcomeCount(post)
-                    .subscribe(success -> {
-                    });
-        else wallInteractor.incWillcomeCount(post)
+    void likeClicked(Post post) {
+        wallInteractor.changeLikeCount(post)
                 .subscribe(success -> {
+                    if (!success) getView().showToast("Internet connection failed");
                 });
-        post.setWillcomed(!post.isWillcomed());
-        getView().updatePostView(post, position);
     }
 
-    void reportClicked(Post post, int position) {
-        if (post.isReported())
-            wallInteractor.decReportCount(post)
-                    .subscribe(success -> {
-                    });
-        else wallInteractor.incReportCount(post)
+    void willcomeClicked(Post post) {
+        wallInteractor.changeWillcomeCount(post)
                 .subscribe(success -> {
+                    if (!success) getView().showToast("Internet connection failed");
                 });
-        post.setReported(!post.isReported());
-        getView().updatePostView(post, position);
+
+    }
+
+    void reportClicked(Post post) {
+        wallInteractor.changeReportCount(post)
+                .subscribe(success -> {
+                    if (!success) getView().showToast("Internet connection failed");
+                });
     }
 
     void likeCountCLicked() {
@@ -127,10 +131,13 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
     }
 
     private void realTimeProvider(RxFirebaseChildEvent<Post> postRxFirebaseEvent) {
+        User user = wallInteractor.getUserCache();
         switch (postRxFirebaseEvent.getEventType()) {
             case ADDED:
-                //do nothing
+                //handle user post
                 Log.e("Added", postRxFirebaseEvent.getKey());
+                if (user.getId() == postRxFirebaseEvent.getValue().getAuthor().getuId())
+                    getView().updateUserPost(postRxFirebaseEvent.getValue());
                 break;
             case REMOVED:
                 //remove
@@ -140,7 +147,10 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
             case CHANGED:
                 //update
                 Log.e("Changed", postRxFirebaseEvent.getKey());
-                getView().updatePostEvent(postRxFirebaseEvent.getValue());
+                convertPostToAdapter(postRxFirebaseEvent.getValue(), user.getId())
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(getView()::updatePost, throwable -> Log.e("ChangedErr", throwable.getMessage()));
                 break;
             case MOVED:
                 //hz poka 4to do nothing
@@ -151,36 +161,66 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
         }
     }
 
-    private List<Post> convertPostsToAdapter(List<Post> posts) {
-        User user = wallInteractor.getUserCache();
-        for (int i = 0; i < posts.size(); i++) {
-            Post post = posts.get(i);
-            if (post.getLikes() != null)
-                for (Like like :
-                        post.getLikes().values()) {
-                    if (like.getAuthor().getuId() == user.getId())
-                        post.setLiked(true);
-                }
-            if (post.getWillcomes() != null)
-                for (Willcome willcome :
-                        post.getWillcomes().values()) {
-                    if (willcome.getAuthor().getuId() == user.getId())
-                        post.setWillcomed(true);
-                }
-            if (post.getReports() != null)
-                for (Report report : post.getReports().values()) {
-                    if (report.getAuthor().getuId() == user.getId())
-                        post.setReported(true);
-                }
-            posts.set(i,post);
-        }
-        Collections.reverse(posts);
-        return posts;
+    private Observable<List<Post>> convertPostsToAdapter(List<Post> posts, long uId) {
+        return Observable.from(posts)
+                .flatMap(post -> convertPostToAdapter(post, uId))
+                .buffer(MAX_POST_LIMIT)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread());
+
+    }
+
+    private Observable<Post> convertPostToAdapter(Post post, long uId) {
+        return Observable.zip(likeFilter(post.getLikes(), uId), willcomeFilter(post.getWillcomes(), uId), reportFilter(post.getReports(), uId),
+                (isLiked, isWillcomed, isReported) -> {
+                    post.setLiked(isLiked);
+                    post.setWillcomed(isWillcomed);
+                    post.setReported(isReported);
+                    return post;
+                });
+    }
+
+    private Observable<Boolean> likeFilter(Map<String, Like> likes, long uId) {
+        return Observable.just(likes)
+                .map(likes1 -> {
+                    if (likes1 != null)
+                        for (Like like :
+                                likes1.values())
+                            if (like.getAuthor().getuId() == uId)
+                                return true;
+
+                    return false;
+                });
+    }
+
+    private Observable<Boolean> willcomeFilter(Map<String, Willcome> willcomeMap, long uId) {
+        return Observable.just(willcomeMap)
+                .map(willcomes -> {
+                    if (willcomes != null)
+                        for (Willcome willcome :
+                                willcomes.values())
+                            if (willcome.getAuthor().getuId() == uId)
+                                return true;
+                    return false;
+                });
+    }
+
+    private Observable<Boolean> reportFilter(Map<String, Report> reportMap, long uId) {
+        return Observable.just(reportMap)
+                .map(reports -> {
+                    if (reports != null)
+                        for (Report report :
+                                reports.values())
+                            if (report.getAuthor().getuId() == uId)
+                                return true;
+                    return false;
+                });
     }
 
     void destroy() {
         listenSubscription = null;
         pagingSubscription = null;
+        controlFabSubscription = null;
     }
 
     void commentClicked(Post post) {

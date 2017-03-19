@@ -1,28 +1,21 @@
 package com.welcome.studio.welcome.model.interactor;
 
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 
 import com.kelvinapps.rxfirebase.RxFirebaseChildEvent;
-import com.welcome.studio.welcome.model.data.Author;
+import com.welcome.studio.welcome.model.entity.Author;
 import com.welcome.studio.welcome.model.data.CommentModel;
 import com.welcome.studio.welcome.model.data.Like;
 import com.welcome.studio.welcome.model.data.Post;
 import com.welcome.studio.welcome.model.data.User;
 import com.welcome.studio.welcome.model.repository.FirebaseRepository;
 import com.welcome.studio.welcome.model.repository.UserRepository;
-import com.welcome.studio.welcome.ui.comment.CommentAdapter;
-import com.welcome.studio.welcome.ui.comment.PagingListener;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.Subscriptions;
 
 /**
  * Created by @mistreckless on 28.02.2017. !
@@ -73,6 +66,13 @@ public class CommentInteractorImpl implements CommentInteractor {
     @Override
     public User getUserCache() {
         return userRepository.getUserCache();
+    }
+
+    @Override
+    public Observable<Boolean> checkServerConnection() {
+        return userRepository.checkServerConnection()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     private CommentModel generateCommentModel(User user, String text) {

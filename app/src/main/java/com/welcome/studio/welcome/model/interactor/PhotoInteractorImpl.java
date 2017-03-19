@@ -80,7 +80,7 @@ public class PhotoInteractorImpl implements PhotoInteractor {
                     .observeOn(AndroidSchedulers.mainThread());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            return null;
+            return Observable.just(false);
         }
     }
 

@@ -7,11 +7,11 @@ import com.welcome.studio.welcome.model.data.Post;
  */
 
 interface PostAdapterListener {
-    void likeClicked(Post post, int position);
+    void likeClicked(Post post);
 
-    void willcomeClicked(Post post, int position);
+    void willcomeClicked(Post post);
 
-    void reportClicked(Post post, int position);
+    void reportClicked(Post post);
 
     void commentClicked(Post post);
 

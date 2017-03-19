@@ -55,7 +55,7 @@ class NextStepPresenter extends BasePresenter<NextStepView, RegistryRouter> {
                                         mainInteractor.uploadMainPhoto().subscribe(res->{
                                             Injector.getInstance().clearRegistryComponent();});
                                 } else getView().showToast("Something wrong");
-                            });
+                            },throwable -> getView().showToast("Huita 4to to ne tak"));
                 });
     }
 
