@@ -40,40 +40,31 @@ public class Wall extends BaseMainFragment implements WallView, PostAdapterListe
     WallPresenter presenter;
 
     private PostAdapter postAdapter;
-    private Post post;
 
     public static Wall newInstance() {
         return new Wall();
-    }
-    public static Wall newInstance(Post post){
-        Wall wall=new Wall();
-        Bundle args=new Bundle();
-        args.putSerializable("post",post);
-        wall.setArguments(args);
-        return wall;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        post=getArguments()==null?null:(Post)getArguments().getSerializable("post");
+        postAdapter=new PostAdapter(getContext(), this);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(getContext());
-        postAdapter=new PostAdapter(getContext(), this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(postAdapter);
-        presenter.controlPaging(recyclerView,post);
-        post=null;
+        presenter.controlPaging(recyclerView);
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDestroy() {
+        super.onDestroy();
         presenter.destroy();
+        postAdapter=null;
     }
 
     @Override
@@ -129,16 +120,6 @@ public class Wall extends BaseMainFragment implements WallView, PostAdapterListe
     }
 
     @Override
-    public void refreshPost(int position) {
-        postAdapter.notifyItemChanged(position);
-    }
-
-    @Override
-    public void refresh() {
-        postAdapter.notifyDataSetChanged();
-    }
-
-    @Override
     public void removePost(Post post) {
         postAdapter.removePost(post);
     }
@@ -156,6 +137,7 @@ public class Wall extends BaseMainFragment implements WallView, PostAdapterListe
     @Override
     public void setUserPost(Post post) {
         postAdapter.addUserPost(post);
+        recyclerView.scrollToPosition(0);
     }
 
     @Override

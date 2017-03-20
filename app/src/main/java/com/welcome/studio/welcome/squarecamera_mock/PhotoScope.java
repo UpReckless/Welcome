@@ -1,4 +1,4 @@
-package com.welcome.studio.welcome.ui.photo;
+package com.welcome.studio.welcome.squarecamera_mock;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -2,6 +2,7 @@ package com.welcome.studio.welcome.ui;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,12 @@ import butterknife.ButterKnife;
 public abstract class BaseMainFragment extends BaseFragment {
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        inject();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Class cls = getClass();
         if (!cls.isAnnotationPresent(Layout.class)) return null;
@@ -34,7 +41,6 @@ public abstract class BaseMainFragment extends BaseFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setRetainInstance(true);
-        inject();
         ((MainActivity) getActivity()).setToolbarToDrawer(getToolbar(), getToolbarTitle(), isAddedToBackStack());
         getPresenter().setView(this);
         getPresenter().setRouter(getRouter());

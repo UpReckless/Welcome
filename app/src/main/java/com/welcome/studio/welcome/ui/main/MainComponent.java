@@ -2,8 +2,8 @@ package com.welcome.studio.welcome.ui.main;
 
 import com.welcome.studio.welcome.ui.comment.CommentComponent;
 import com.welcome.studio.welcome.ui.comment.CommentModule;
-import com.welcome.studio.welcome.ui.photo.PhotoComponent;
-import com.welcome.studio.welcome.ui.photo.PhotoModule;
+import com.welcome.studio.welcome.squarecamera_mock.PhotoComponent;
+import com.welcome.studio.welcome.squarecamera_mock.PhotoModule;
 import com.welcome.studio.welcome.ui.profile.ProfileComponent;
 import com.welcome.studio.welcome.ui.profile.ProfileModule;
 import com.welcome.studio.welcome.ui.registry.RegistryComponent;

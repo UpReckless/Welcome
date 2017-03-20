@@ -2,13 +2,11 @@ package com.welcome.studio.welcome.model.interactor;
 
 import android.support.v7.widget.RecyclerView;
 
-import com.kelvinapps.rxfirebase.RxFirebaseChildEvent;
 import com.welcome.studio.welcome.model.data.Post;
 import com.welcome.studio.welcome.model.data.User;
 
-import java.util.List;
-
 import rx.Observable;
+import rx.Subscription;
 
 /**
  * Created by Royal on 11.02.2017. !
@@ -16,9 +14,9 @@ import rx.Observable;
 public interface WallInteractor {
     Observable<Boolean> controlFab();
 
-    Observable<List<Post>> controlPosts(RecyclerView recyclerView);
+    Subscription controlPosts(RecyclerView recyclerView);
 
-    Observable<RxFirebaseChildEvent<Post>> listenPosts();
+    Subscription listenPosts();
 
     Observable<Boolean> sharePost(Post post);
 

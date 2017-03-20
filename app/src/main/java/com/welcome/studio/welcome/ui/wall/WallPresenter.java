@@ -4,18 +4,19 @@ import android.Manifest;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
-import com.kelvinapps.rxfirebase.RxFirebaseChildEvent;
 import com.tbruyelle.rxpermissions.RxPermissions;
+import com.welcome.studio.welcome.app.Injector;
+import com.welcome.studio.welcome.app.RxBus;
 import com.welcome.studio.welcome.model.data.Like;
 import com.welcome.studio.welcome.model.data.Post;
 import com.welcome.studio.welcome.model.data.Report;
 import com.welcome.studio.welcome.model.data.User;
 import com.welcome.studio.welcome.model.data.Willcome;
+import com.welcome.studio.welcome.model.entity.PostEvent;
 import com.welcome.studio.welcome.model.interactor.WallInteractor;
 import com.welcome.studio.welcome.ui.BasePresenter;
 import com.welcome.studio.welcome.ui.main.MainRouter;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -36,32 +37,36 @@ import static com.welcome.studio.welcome.util.Constance.ConstHolder.MAX_POST_LIM
 class WallPresenter extends BasePresenter<WallView, MainRouter> {
     private WallInteractor wallInteractor;
     private Lazy<RxPermissions> rxPermissions;
+    private RxBus bus;
     private Subscription pagingSubscription;
     private Subscription listenSubscription;
     private Subscription controlFabSubscription;
+    private Subscription busPostListSubscription;
+    private Subscription busPostEventSubscription;
+    private Subscription busUserPostSubscription;
+    private User user;
 
     @Inject
-    WallPresenter(WallInteractor wallInteractor, Lazy<RxPermissions> rxPermissions) {
+    WallPresenter(WallInteractor wallInteractor, Lazy<RxPermissions> rxPermissions, RxBus bus) {
         this.wallInteractor = wallInteractor;
         this.rxPermissions = rxPermissions;
+        this.bus = bus;
+        user = this.wallInteractor.getUserCache();
     }
+
 
     @Override
     public void onStart() {
         controlFabSubscription = wallInteractor.controlFab()
                 .subscribe(getView()::setFabEnabled);
-        if (listenSubscription != null && listenSubscription.isUnsubscribed())
-            listenSubscription = wallInteractor.listenPosts()
-                    .subscribe(this::realTimeProvider);
-
+        if (busUserPostSubscription==null || busUserPostSubscription.isUnsubscribed())
+            busUserPostSubscription=bus.getUserPostEvent().subscribe(this::busEventUserPost);
+        if (busPostEventSubscription==null || busPostEventSubscription.isUnsubscribed())
+            busPostEventSubscription=bus.getPostEvent().subscribe(this::busEventPostEvent);
     }
 
     @Override
     public void onStop() {
-        if (pagingSubscription != null)
-            pagingSubscription.unsubscribe();
-        if (listenSubscription != null)
-            listenSubscription.unsubscribe();
         if (controlFabSubscription != null)
             controlFabSubscription.unsubscribe();
     }
@@ -75,33 +80,14 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
     }
 
 
-    void controlPaging(RecyclerView recyclerView, Post post) {
-        pagingSubscription = wallInteractor.controlPosts(recyclerView)
-                .subscribe(postList -> {
-                    Collections.reverse(postList);
-                    User user = wallInteractor.getUserCache();
-                    convertPostsToAdapter(postList, user.getId())
-                            .subscribe(posts -> {
-                                getView().addPosts(posts);
-                                getView().refreshPosts(recyclerView.getAdapter().getItemCount() - posts.size());
-                                if (listenSubscription != null)
-                                    listenSubscription.unsubscribe();
-                                listenSubscription = wallInteractor.listenPosts()
-                                        .subscribe(this::realTimeProvider);
-                            }, throwable -> {
-                                Log.e("ControlPagin", throwable.getMessage());
-                            });
-                });
-        if (post != null) {
-            getView().setUserPost(post);
-            wallInteractor.sharePost(post)
-                    .subscribe(success -> {
-                        Log.e("postShare", String.valueOf(success));
-                    }, throwable -> {
-                        Log.e("SharePost", "Unsuccessfully upload");
+    void controlPaging(RecyclerView recyclerView) {
+        if (pagingSubscription == null || pagingSubscription.isUnsubscribed())
+            pagingSubscription = wallInteractor.controlPosts(recyclerView);
+        if (busPostListSubscription == null || busPostListSubscription.isUnsubscribed())
+            busPostListSubscription = bus.getPostList().
+                    subscribe(posts -> {
+                        busEventPostList(posts, recyclerView);
                     });
-        }
-
     }
 
     void likeClicked(Post post) {
@@ -130,34 +116,53 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
 
     }
 
-    private void realTimeProvider(RxFirebaseChildEvent<Post> postRxFirebaseEvent) {
-        User user = wallInteractor.getUserCache();
-        switch (postRxFirebaseEvent.getEventType()) {
-            case ADDED:
-                //handle user post
-                Log.e("Added", postRxFirebaseEvent.getKey());
-                if (user.getId() == postRxFirebaseEvent.getValue().getAuthor().getuId())
-                    getView().updateUserPost(postRxFirebaseEvent.getValue());
-                break;
-            case REMOVED:
-                //remove
-                getView().removePost(postRxFirebaseEvent.getValue());
-                Log.e("Removed", postRxFirebaseEvent.getKey());
-                break;
-            case CHANGED:
-                //update
-                Log.e("Changed", postRxFirebaseEvent.getKey());
-                convertPostToAdapter(postRxFirebaseEvent.getValue(), user.getId())
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(getView()::updatePost, throwable -> Log.e("ChangedErr", throwable.getMessage()));
-                break;
-            case MOVED:
-                //hz poka 4to do nothing
-                Log.e("Moved", postRxFirebaseEvent.getKey());
-                break;
-            default:
-                throw new RuntimeException("unexpected event type " + postRxFirebaseEvent.getEventType().name());
+    private void busEventUserPost(Post post){
+        getView().setUserPost(post);
+        wallInteractor.sharePost(post)
+                .subscribe(success->{
+                    if (!success) Log.e("userPost","failed");
+                },throwable -> Log.e("userPostEr","faild",throwable));
+    }
+
+    private void busEventPostList(List<Post> posts, RecyclerView recyclerView) {
+        if (getView() != null) {
+            convertPostsToAdapter(posts, user.getId())
+                    .subscribe(posts1 -> {
+                        getView().addPosts(posts1);
+                        getView().refreshPosts(recyclerView.getAdapter().getItemCount() - posts1.size());
+                    });
+            if (listenSubscription == null || listenSubscription.isUnsubscribed())
+                listenSubscription = wallInteractor.listenPosts();
+
+        }
+    }
+
+    private void busEventPostEvent(PostEvent postEvent) {
+        if (getView() != null) {
+            switch (postEvent.getEventType()) {
+                case ADDED:
+                    //only works for user posts
+                    Log.e("Added", postEvent.getPost().getId());
+                    getView().updateUserPost(postEvent.getPost());
+                    break;
+                case REMOVED:
+                    //remove
+                    getView().removePost(postEvent.getPost());
+                    Log.e("Removed", postEvent.getPost().getId());
+                    break;
+                case CHANGED:
+                    //update
+                    Log.e("Changed", postEvent.getPost().getId());
+                    convertPostToAdapter(postEvent.getPost(), user.getId())
+                            .subscribeOn(Schedulers.computation())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(getView()::updatePost, throwable -> Log.e("ChangedErr", throwable.getMessage()));
+                    break;
+                case MOVED:
+                    //do nothing
+                    Log.e("Moved", postEvent.getPost().getId());
+                    break;
+            }
         }
     }
 
@@ -218,9 +223,15 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
     }
 
     void destroy() {
-        listenSubscription = null;
-        pagingSubscription = null;
-        controlFabSubscription = null;
+        if (busPostListSubscription != null)
+            busPostListSubscription.unsubscribe();
+        if (pagingSubscription != null)
+            pagingSubscription.unsubscribe();
+        if (busPostEventSubscription != null)
+            busPostEventSubscription.unsubscribe();
+        if (listenSubscription != null)
+            listenSubscription.unsubscribe();
+        Injector.getInstance().clearWallComponent();
     }
 
     void commentClicked(Post post) {

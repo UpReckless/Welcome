@@ -24,6 +24,7 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.welcome.studio.welcome.R;
 import com.welcome.studio.welcome.app.Injector;
+import com.welcome.studio.welcome.app.RxBus;
 import com.welcome.studio.welcome.model.data.Post;
 import com.welcome.studio.welcome.model.data.User;
 import com.welcome.studio.welcome.squarecamera_mock.CameraActivity;
@@ -43,6 +44,8 @@ import static com.welcome.studio.welcome.util.Constance.IntentCodeHolder.CAMERA_
 public class MainActivity extends AppCompatActivity implements View, AccountHeader.OnAccountHeaderProfileImageListener, MainRouter {
     @Inject
     Presenter presenter;
+    @Inject
+    RxBus bus;
 
     private Drawer drawer;
     private AccountHeader accountHeader;
@@ -186,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
     public void setToolbarToDrawer(Toolbar toolbar, String title, boolean isAddedToBackStack) {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            if (drawer==null) initDrawer();
+            if (drawer == null) initDrawer();
             if (isAddedToBackStack) {
                 toolbar.setNavigationIcon(R.mipmap.ic_arrow_back_black_24dp);
                 toolbar.setNavigationOnClickListener(v -> onBackPressed());
@@ -203,15 +206,11 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
-            case CAMERA_CODE:{
-                if (resultCode==RESULT_OK && data !=null){
-                    Post post= (Post) data.getSerializableExtra(Constance.IntentKeyHolder.POST_KEY);
-                    Wall wall= Wall.newInstance(post);
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container,wall,wall.getFragmentTag())
-                            .commit();
-
+        switch (requestCode) {
+            case CAMERA_CODE: {
+                if (resultCode == RESULT_OK && data != null) {
+                    Post post = (Post) data.getSerializableExtra(Constance.IntentKeyHolder.POST_KEY);
+                    bus.sendUserPost(post);
                 }
                 break;
             }
@@ -252,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
 
     @Override
     public void navigateToPhoto() {
-        Intent intent=new Intent(this,CameraActivity.class);
+        Intent intent = new Intent(this, CameraActivity.class);
         startActivityForResult(intent, CAMERA_CODE);
     }
 

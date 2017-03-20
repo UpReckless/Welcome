@@ -4,23 +4,28 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.kelvinapps.rxfirebase.RxFirebaseChildEvent;
+import com.welcome.studio.welcome.app.RxBus;
 import com.welcome.studio.welcome.model.data.Like;
 import com.welcome.studio.welcome.model.data.Post;
 import com.welcome.studio.welcome.model.data.Report;
 import com.welcome.studio.welcome.model.data.User;
 import com.welcome.studio.welcome.model.data.Willcome;
 import com.welcome.studio.welcome.model.entity.Author;
+import com.welcome.studio.welcome.model.entity.PostEvent;
 import com.welcome.studio.welcome.model.repository.FirebaseRepository;
+import com.welcome.studio.welcome.model.repository.PostRepository;
 import com.welcome.studio.welcome.model.repository.UserRepository;
 import com.welcome.studio.welcome.ui.wall.PagingListener;
 import com.welcome.studio.welcome.ui.wall.PostAdapter;
 
 import java.io.FileNotFoundException;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
@@ -34,15 +39,18 @@ import static com.welcome.studio.welcome.util.Constance.ConstHolder.RETRY_COUNT;
  */
 
 public class WallInteractorImpl implements WallInteractor {
-
-
     private FirebaseRepository firebaseRepository;
     private UserRepository userRepository;
+    private PostRepository postRepository;
+    private RxBus bus;
+    private RecyclerView recyclerView;
 
     @Inject
-    public WallInteractorImpl(FirebaseRepository firebaseRepository, UserRepository userRepository) {
+    public WallInteractorImpl(FirebaseRepository firebaseRepository, UserRepository userRepository, PostRepository postRepository, RxBus bus) {
         this.firebaseRepository = firebaseRepository;
         this.userRepository = userRepository;
+        this.postRepository=postRepository;
+        this.bus=bus;
     }
 
     @Override
@@ -54,24 +62,30 @@ public class WallInteractorImpl implements WallInteractor {
     }
 
     @Override
-    public Observable<List<Post>> controlPosts(RecyclerView recyclerView) {
+    public Subscription controlPosts(RecyclerView recyclerView) {
+        this.recyclerView=recyclerView;
         User user = userRepository.getUserCache();
         PagingListener pagingListener = getPagingListener(recyclerView, user);
         return getScrollObservable(recyclerView)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .distinctUntilChanged()
                 .observeOn(Schedulers.io())
-                .switchMap(offset -> getPagingObservable(pagingListener, pagingListener.nextPage(offset), 0, offset, RETRY_COUNT));
+                .switchMap(offset -> getPagingObservable(pagingListener, pagingListener.nextPage(offset), 1, offset, RETRY_COUNT))
+                .subscribe(posts -> {
+                    postRepository.savePosts(posts);
+                    Collections.reverse(posts);
+                    bus.sendPostList(posts);
+                });
     }
 
 
     @Override
-    public Observable<RxFirebaseChildEvent<Post>> listenPosts() {
+    public Subscription listenPosts() {
         return Observable.just(userRepository.getUserCache())
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(Schedulers.io())
                 .flatMap(user -> firebaseRepository.listenPosts(user.getCountry(), user.getCity()))
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribe(this::realtimeProvider);
     }
 
     @Override
@@ -176,6 +190,42 @@ public class WallInteractorImpl implements WallInteractor {
             Post latestPost = ((PostAdapter) recyclerView.getAdapter()).getItemAtPosition(offset - 1);
             return firebaseRepository.getPosts(user.getCountry(), user.getCity(), latestPost == null ? 0 : latestPost.getTime(), MAX_POST_LIMIT);
         };
+    }
+
+    private void realtimeProvider(RxFirebaseChildEvent<Post> postChildEvent){
+        if (recyclerView.getAdapter()==null)
+            return;
+        switch (postChildEvent.getEventType()){
+            case ADDED:
+                //handle user post
+                PostAdapter adapter=((PostAdapter)recyclerView.getAdapter());
+                for (int i=0;i<adapter.getItemCount();i++){
+                    if (adapter.getItemAtPosition(i).getId()==null && adapter.getItemAtPosition(i).getAuthor().getuId()==getUserCache().getId()){
+                        //need save to db
+                        postRepository.savePost(postChildEvent.getValue());
+                        bus.sendPostEvent(new PostEvent(postChildEvent.getValue(), RxFirebaseChildEvent.EventType.ADDED));
+                    }
+                }
+
+                break;
+            case MOVED:
+                //do nothing
+                break;
+            case CHANGED:
+                //change & send event to change
+                //need to update changes in db
+                postRepository.update(postChildEvent.getValue());
+                bus.sendPostEvent(new PostEvent(postChildEvent.getValue(), RxFirebaseChildEvent.EventType.CHANGED));
+                break;
+            case REMOVED:
+                //remove & send event to remove
+                if (getUserCache().getId()!=postChildEvent.getValue().getAuthor().getuId()){
+                    //need to remove in db
+                    postRepository.removePost(postChildEvent.getValue().getId());
+                }
+                bus.sendPostEvent(new PostEvent(postChildEvent.getValue(), RxFirebaseChildEvent.EventType.REMOVED));
+                break;
+        }
     }
 
     private Like findUserLike(User user, Post post) {

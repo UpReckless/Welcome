@@ -16,10 +16,6 @@ interface WallView {
 
     void refreshPosts(int position);
 
-    void refreshPost(int position);
-
-    void refresh();
-
     void removePost(Post post);
 
     void updatePost(Post post);

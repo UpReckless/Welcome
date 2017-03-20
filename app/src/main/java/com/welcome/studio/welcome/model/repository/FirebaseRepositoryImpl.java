@@ -46,7 +46,6 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
     public FirebaseRepositoryImpl(FirebaseStorage firebaseStorage, FirebaseDatabase firebaseDatabase) {
         this.firebaseStorage = firebaseStorage;
         this.firebaseDatabase = firebaseDatabase;
-        this.firebaseDatabase.setPersistenceEnabled(true);
     }
 
     @Override

@@ -27,7 +27,6 @@ import com.welcome.studio.welcome.model.data.User;
 import com.welcome.studio.welcome.model.entity.Author;
 import com.welcome.studio.welcome.model.repository.LocationRepository;
 import com.welcome.studio.welcome.model.repository.UserRepository;
-import com.welcome.studio.welcome.ui.photo.PhotoModule;
 import com.welcome.studio.welcome.util.Constance;
 import com.welcome.studio.welcome.util.tagview.OnTagClickListener;
 import com.welcome.studio.welcome.util.tagview.Tag;

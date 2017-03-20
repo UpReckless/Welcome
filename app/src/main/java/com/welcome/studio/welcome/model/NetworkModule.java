@@ -9,6 +9,8 @@ import com.welcome.studio.welcome.model.repository.FirebaseRepository;
 import com.welcome.studio.welcome.model.repository.FirebaseRepositoryImpl;
 import com.welcome.studio.welcome.model.repository.LocationRepository;
 import com.welcome.studio.welcome.model.repository.LocationRepositoryImpl;
+import com.welcome.studio.welcome.model.repository.PostRepository;
+import com.welcome.studio.welcome.model.repository.PostRepositoryImpl;
 import com.welcome.studio.welcome.model.repository.UserRepository;
 import com.welcome.studio.welcome.model.repository.UserRepositoryImpl;
 
@@ -53,5 +55,11 @@ public class NetworkModule {
     @Provides
     ReactiveLocationProvider provideReactiveLocationProvider(Context context){
         return new ReactiveLocationProvider(context);
+    }
+
+    @Singleton
+    @Provides
+    PostRepository providePostRepository(Context context){
+        return new PostRepositoryImpl(context);
     }
 }

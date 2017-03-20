@@ -1,8 +1,10 @@
 package com.welcome.studio.welcome.ui.wall;
 
+import com.welcome.studio.welcome.app.RxBus;
 import com.welcome.studio.welcome.model.interactor.WallInteractor;
 import com.welcome.studio.welcome.model.interactor.WallInteractorImpl;
 import com.welcome.studio.welcome.model.repository.FirebaseRepository;
+import com.welcome.studio.welcome.model.repository.PostRepository;
 import com.welcome.studio.welcome.model.repository.UserRepository;
 
 import dagger.Module;
@@ -17,7 +19,7 @@ public class WallModule {
 
     @WallScope
     @Provides
-    WallInteractor provideWallInteractor(FirebaseRepository firebaseRepository, UserRepository userRepository){
-        return new WallInteractorImpl(firebaseRepository, userRepository);
+    WallInteractor provideWallInteractor(FirebaseRepository firebaseRepository, UserRepository userRepository, PostRepository postRepository, RxBus bus){
+        return new WallInteractorImpl(firebaseRepository, userRepository,postRepository,bus);
     }
 }
