@@ -2,6 +2,7 @@ package com.welcome.studio.welcome.model.interactor;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.kelvinapps.rxfirebase.RxFirebaseChildEvent;
 import com.welcome.studio.welcome.app.RxBus;
@@ -20,6 +21,7 @@ import com.welcome.studio.welcome.ui.wall.PostAdapter;
 
 import java.io.FileNotFoundException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -49,8 +51,8 @@ public class WallInteractorImpl implements WallInteractor {
     public WallInteractorImpl(FirebaseRepository firebaseRepository, UserRepository userRepository, PostRepository postRepository, RxBus bus) {
         this.firebaseRepository = firebaseRepository;
         this.userRepository = userRepository;
-        this.postRepository=postRepository;
-        this.bus=bus;
+        this.postRepository = postRepository;
+        this.bus = bus;
     }
 
     @Override
@@ -63,19 +65,33 @@ public class WallInteractorImpl implements WallInteractor {
 
     @Override
     public Subscription controlPosts(RecyclerView recyclerView) {
-        this.recyclerView=recyclerView;
+        this.recyclerView = recyclerView;
         User user = userRepository.getUserCache();
         PagingListener pagingListener = getPagingListener(recyclerView, user);
         return getScrollObservable(recyclerView)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .distinctUntilChanged()
                 .observeOn(Schedulers.io())
-                .switchMap(offset -> getPagingObservable(pagingListener, pagingListener.nextPage(offset), 1, offset, RETRY_COUNT))
+                .switchMap(offset -> getPagingObservable(pagingListener, pagingListener.nextPage(offset), 0, offset, RETRY_COUNT))
                 .subscribe(posts -> {
                     postRepository.savePosts(posts);
                     Collections.reverse(posts);
                     bus.sendPostList(posts);
                 });
+    }
+
+    @Override
+    public Observable<List<Post>> getCachedPosts() {
+        User user = getUserCache();
+        long currentTime = System.currentTimeMillis();
+        return Observable.from(postRepository.getAllPosts())
+                .filter(post -> {
+                    Log.e("filter cache posts",String.valueOf(new Date(currentTime))+"  "+ String.valueOf(new Date(post.getDeleteTime())));
+                    return user.getId() != post.getAuthor().getuId() || currentTime < post.getDeleteTime();
+                })
+                .buffer(MAX_POST_LIMIT)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
 
@@ -91,12 +107,12 @@ public class WallInteractorImpl implements WallInteractor {
     @Override
     public Observable<Boolean> sharePost(Post post) {
         try {
-            return firebaseRepository.uploadImage(post.getContentPath(),post.getAuthor().getuId())
+            return firebaseRepository.uploadImage(post.getContentPath(), post.getAuthor().getuId())
                     .doOnNext(uri -> post.setContentRef(String.valueOf(uri)))
                     .observeOn(Schedulers.io())
-                    .flatMap(uri->firebaseRepository.sharePost(post))
-                    .flatMap(postReference -> firebaseRepository.setPostTags(post.getCountry(),post.getCity()
-                            ,postReference.getKey(),post.getTags()))
+                    .flatMap(uri -> firebaseRepository.sharePost(post))
+                    .flatMap(postReference -> firebaseRepository.setPostTags(post.getCountry(), post.getCity()
+                            , postReference.getKey(), post.getTags()))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread());
         } catch (FileNotFoundException e) {
@@ -192,15 +208,15 @@ public class WallInteractorImpl implements WallInteractor {
         };
     }
 
-    private void realtimeProvider(RxFirebaseChildEvent<Post> postChildEvent){
-        if (recyclerView.getAdapter()==null)
+    private void realtimeProvider(RxFirebaseChildEvent<Post> postChildEvent) {
+        if (recyclerView.getAdapter() == null)
             return;
-        switch (postChildEvent.getEventType()){
+        switch (postChildEvent.getEventType()) {
             case ADDED:
                 //handle user post
-                PostAdapter adapter=((PostAdapter)recyclerView.getAdapter());
-                for (int i=0;i<adapter.getItemCount();i++){
-                    if (adapter.getItemAtPosition(i).getId()==null && adapter.getItemAtPosition(i).getAuthor().getuId()==getUserCache().getId()){
+                PostAdapter adapter = ((PostAdapter) recyclerView.getAdapter());
+                for (int i = 0; i < adapter.getItemCount(); i++) {
+                    if (adapter.getItemAtPosition(i).getId() == null && adapter.getItemAtPosition(i).getAuthor().getuId() == getUserCache().getId()) {
                         //need save to db
                         postRepository.savePost(postChildEvent.getValue());
                         bus.sendPostEvent(new PostEvent(postChildEvent.getValue(), RxFirebaseChildEvent.EventType.ADDED));
@@ -219,7 +235,7 @@ public class WallInteractorImpl implements WallInteractor {
                 break;
             case REMOVED:
                 //remove & send event to remove
-                if (getUserCache().getId()!=postChildEvent.getValue().getAuthor().getuId()){
+                if (getUserCache().getId() != postChildEvent.getValue().getAuthor().getuId()) {
                     //need to remove in db
                     postRepository.removePost(postChildEvent.getValue().getId());
                 }

@@ -13,10 +13,12 @@ import com.welcome.studio.welcome.model.data.Report;
 import com.welcome.studio.welcome.model.data.User;
 import com.welcome.studio.welcome.model.data.Willcome;
 import com.welcome.studio.welcome.model.entity.PostEvent;
+import com.welcome.studio.welcome.model.interactor.MainInteractor;
 import com.welcome.studio.welcome.model.interactor.WallInteractor;
 import com.welcome.studio.welcome.ui.BasePresenter;
 import com.welcome.studio.welcome.ui.main.MainRouter;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +38,7 @@ import static com.welcome.studio.welcome.util.Constance.ConstHolder.MAX_POST_LIM
 
 class WallPresenter extends BasePresenter<WallView, MainRouter> {
     private WallInteractor wallInteractor;
+    private MainInteractor mainInteractor;
     private Lazy<RxPermissions> rxPermissions;
     private RxBus bus;
     private Subscription pagingSubscription;
@@ -47,8 +50,9 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
     private User user;
 
     @Inject
-    WallPresenter(WallInteractor wallInteractor, Lazy<RxPermissions> rxPermissions, RxBus bus) {
+    WallPresenter(WallInteractor wallInteractor, MainInteractor mainInteractor, Lazy<RxPermissions> rxPermissions, RxBus bus) {
         this.wallInteractor = wallInteractor;
+        this.mainInteractor = mainInteractor;
         this.rxPermissions = rxPermissions;
         this.bus = bus;
         user = this.wallInteractor.getUserCache();
@@ -59,10 +63,10 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
     public void onStart() {
         controlFabSubscription = wallInteractor.controlFab()
                 .subscribe(getView()::setFabEnabled);
-        if (busUserPostSubscription==null || busUserPostSubscription.isUnsubscribed())
-            busUserPostSubscription=bus.getUserPostEvent().subscribe(this::busEventUserPost);
-        if (busPostEventSubscription==null || busPostEventSubscription.isUnsubscribed())
-            busPostEventSubscription=bus.getPostEvent().subscribe(this::busEventPostEvent);
+        if (busUserPostSubscription == null || busUserPostSubscription.isUnsubscribed())
+            busUserPostSubscription = bus.getUserPostEvent().subscribe(this::busEventUserPost);
+        if (busPostEventSubscription == null || busPostEventSubscription.isUnsubscribed())
+            busPostEventSubscription = bus.getPostEvent().subscribe(this::busEventPostEvent);
     }
 
     @Override
@@ -81,13 +85,27 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
 
 
     void controlPaging(RecyclerView recyclerView) {
-        if (pagingSubscription == null || pagingSubscription.isUnsubscribed())
-            pagingSubscription = wallInteractor.controlPosts(recyclerView);
-        if (busPostListSubscription == null || busPostListSubscription.isUnsubscribed())
-            busPostListSubscription = bus.getPostList().
-                    subscribe(posts -> {
-                        busEventPostList(posts, recyclerView);
-                    });
+        mainInteractor.checkServerConnection()
+                .subscribe(success -> {
+                    if (success) {
+                        if (pagingSubscription == null || pagingSubscription.isUnsubscribed())
+                            pagingSubscription = wallInteractor.controlPosts(recyclerView);
+                        if (busPostListSubscription == null || busPostListSubscription.isUnsubscribed())
+                            busPostListSubscription = bus.getPostList().
+                                    subscribe(posts -> {
+                                        busEventPostList(posts, recyclerView);
+                                    });
+                    } else {
+                        if (pagingSubscription == null)
+                            pagingSubscription = wallInteractor.getCachedPosts()
+                                    .subscribe(posts -> {
+                                        Collections.reverse(posts);
+                                        getView().addPosts(posts);
+                                        getView().refreshPosts(recyclerView.getAdapter().getItemCount() - posts.size());
+                                    });
+                    }
+                });
+
     }
 
     void likeClicked(Post post) {
@@ -116,12 +134,12 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
 
     }
 
-    private void busEventUserPost(Post post){
+    private void busEventUserPost(Post post) {
         getView().setUserPost(post);
         wallInteractor.sharePost(post)
-                .subscribe(success->{
-                    if (!success) Log.e("userPost","failed");
-                },throwable -> Log.e("userPostEr","faild",throwable));
+                .subscribe(success -> {
+                    if (!success) Log.e("userPost", "failed");
+                }, throwable -> Log.e("userPostEr", "faild", throwable));
     }
 
     private void busEventPostList(List<Post> posts, RecyclerView recyclerView) {

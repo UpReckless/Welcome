@@ -58,19 +58,26 @@ public class Injector {
     }
 
 
-    public WallComponent plus(WallModule wallModule){
-        if (wallComponent==null) wallComponent=mainComponent.plus(wallModule);
+    public WallComponent plus(WallModule wallModule) {
+        if (wallComponent == null) wallComponent = mainComponent.plus(wallModule);
         return wallComponent;
     }
-    public void clearWallComponent(){wallComponent=null;}
+
+    public void clearWallComponent() {
+        wallComponent = null;
+    }
 
     public PhotoComponent plus(PhotoModule photoModule) {
-        if (photoComponent==null) photoComponent=mainComponent.plus(photoModule);
+        if (photoComponent == null) photoComponent = mainComponent.plus(photoModule);
         return photoComponent;
     }
 
     public CommentComponent plus(CommentModule commentModule) {
-        if (commentComponent==null)commentComponent=mainComponent.plus(commentModule);
+        if (commentComponent == null) commentComponent = mainComponent.plus(commentModule);
         return commentComponent;
+    }
+
+    public void clearCommentComponent() {
+        commentComponent = null;
     }
 }

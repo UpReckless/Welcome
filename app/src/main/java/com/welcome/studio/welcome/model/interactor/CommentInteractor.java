@@ -17,9 +17,7 @@ public interface CommentInteractor {
 
     Observable<Boolean> sendComment(Post post, String text);
 
-    Observable<Boolean> incLikeCount(CommentModel comment, Post post);
-
-    Observable<Boolean> decLikeCount(CommentModel comment, Post post);
+    Observable<Boolean> changeLikeCount(CommentModel comment, Post post);
 
     User getUserCache();
 

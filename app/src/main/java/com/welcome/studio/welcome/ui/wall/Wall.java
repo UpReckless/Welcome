@@ -57,6 +57,11 @@ public class Wall extends BaseMainFragment implements WallView, PostAdapterListe
         RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(postAdapter);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         presenter.controlPaging(recyclerView);
     }
 

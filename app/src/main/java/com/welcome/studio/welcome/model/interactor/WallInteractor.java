@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import com.welcome.studio.welcome.model.data.Post;
 import com.welcome.studio.welcome.model.data.User;
 
+import java.util.List;
+
 import rx.Observable;
 import rx.Subscription;
 
@@ -15,6 +17,8 @@ public interface WallInteractor {
     Observable<Boolean> controlFab();
 
     Subscription controlPosts(RecyclerView recyclerView);
+
+    Observable<List<Post>> getCachedPosts();
 
     Subscription listenPosts();
 

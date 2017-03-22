@@ -22,4 +22,6 @@ public interface MainInteractor {
     Observable<Uri> downloadMyMainPhotoUri();
 
     Completable downloadMyMainPhotoBitmap(Bitmap bitmap);
+
+    Observable<Boolean> checkServerConnection();
 }

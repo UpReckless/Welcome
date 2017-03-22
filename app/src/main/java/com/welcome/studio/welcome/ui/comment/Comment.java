@@ -62,9 +62,15 @@ public class Comment extends BaseMainFragment implements CommentView, CommentAda
         commentAdapter = new CommentAdapter(getContext(), this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(commentAdapter);
-        presenter.setPost((Post) getArguments().getSerializable("post"));
+        presenter.loadComments((Post) getArguments().getSerializable("post"));
         presenter.controlSendView(RxTextView.textChanges(edtComment));
         presenter.controlTextChanges(RxTextView.textChanges(edtComment));
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        presenter.destroy();
     }
 
     @Override
@@ -136,23 +142,8 @@ public class Comment extends BaseMainFragment implements CommentView, CommentAda
     }
 
     @Override
-    public void refreshComments(int position) {
-        commentAdapter.notifyItemInserted(position);
-    }
-
-    @Override
-    public void refreshComment(int position) {
-        commentAdapter.notifyItemChanged(position);
-    }
-
-    @Override
     public void refresh() {
         commentAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void updateCommentView(CommentModel comment, int position) {
-        commentAdapter.updateCommentView(comment, position);
     }
 
     @Override

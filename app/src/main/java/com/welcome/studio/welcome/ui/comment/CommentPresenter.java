@@ -3,6 +3,7 @@ package com.welcome.studio.welcome.ui.comment;
 import android.util.Log;
 
 import com.kelvinapps.rxfirebase.RxFirebaseChildEvent;
+import com.welcome.studio.welcome.app.Injector;
 import com.welcome.studio.welcome.model.data.CommentModel;
 import com.welcome.studio.welcome.model.data.Like;
 import com.welcome.studio.welcome.model.data.Post;
@@ -15,11 +16,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by @mistreckless on 28.02.2017. !
@@ -28,6 +32,7 @@ import rx.Subscription;
 class CommentPresenter extends BasePresenter<CommentView, MainRouter> {
     private Post post;
     private String text = "";
+    private User user;
 
     private CommentInteractor commentInteractor;
     private Subscription listenSubscription;
@@ -35,23 +40,63 @@ class CommentPresenter extends BasePresenter<CommentView, MainRouter> {
     @Inject
     CommentPresenter(CommentInteractor commentInteractor) {
         this.commentInteractor = commentInteractor;
+        user = this.commentInteractor.getUserCache();
     }
 
     @Override
     public void onStart() {
         commentInteractor.checkServerConnection()
-                .subscribe(success->{
+                .subscribe(success -> {
                     if (success)
                         listenSubscription = commentInteractor.listenComments(post)
-                                .subscribe(this::realTimeProvider, throwable -> Log.e("CommentPres",throwable.getMessage()));
+                                .subscribe(this::realTimeProvider, throwable -> Log.e("CommentPres", throwable.getMessage()));
                     else getView().showToast("Network connection failed");
                 });
+    }
 
+    @Override
+    public void onStop() {
+        if (listenSubscription != null)
+            listenSubscription.unsubscribe();
+    }
+
+    void likeCLicked(CommentModel comment, int position) {
+        commentInteractor.changeLikeCount(comment, post)
+                .subscribe(success -> {
+                    if (!success) getView().showToast("Internet connection failed");
+                });
+    }
+
+    void likeCountClicked(CommentModel comment) {
+
+    }
+
+    void userThumbClicked(CommentModel comment) {
+
+    }
+
+    void sendComment() {
+        commentInteractor.sendComment(post, text)
+                .subscribe(success -> {
+                    getView().hideKeyboard();
+                });
+    }
+
+    void controlSendView(Observable<CharSequence> text) {
+        commentInteractor.controlSendView(text)
+                .subscribe(getView()::setSendView);
+    }
+
+    void controlTextChanges(Observable<CharSequence> charSequenceObservable) {
+        charSequenceObservable.subscribe(charSequence -> text = charSequence.toString());
+    }
+
+    void loadComments(Post post) {
+        this.post = post;
         if (post.getComments() != null) {
             List<CommentModel> comments = new ArrayList<>(post.getComments().values());
             Collections.sort(comments, (o1, o2) -> o1.getTime() < o2.getTime() ? -1 : o2.getTime() < o1.getTime() ? 1 : 0);
 
-            User user = commentInteractor.getUserCache();
             for (int i = 0; i < comments.size(); i++) {
                 CommentModel comment = comments.get(i);
                 if (comment.getLikes() != null)
@@ -67,57 +112,6 @@ class CommentPresenter extends BasePresenter<CommentView, MainRouter> {
             getView().addComments(comments);
             getView().refresh();
         }
-    }
-
-    @Override
-    public void onStop() {
-        if (listenSubscription != null)
-            listenSubscription.unsubscribe();
-    }
-
-    void setPost(Post post) {
-        this.post = post;
-    }
-
-    void likeCLicked(CommentModel comment, int position) {
-        if (comment.isLiked())
-            commentInteractor.decLikeCount(comment, post)
-                    .subscribe(success -> {
-                        if (success){
-                            comment.setLiked(false);
-                            getView().updateCommentView(comment,position);
-                        }
-                        else getView().showToast("Internet connection failed");
-                    });
-        else commentInteractor.incLikeCount(comment, post)
-                .subscribe(success -> {
-                    if (success){
-                        comment.setLiked(true);
-                        getView().updateCommentView(comment,position);
-                    }
-                    else getView().showToast("Internet connection failed");
-                });
-    }
-
-    void likeCountClicked(CommentModel comment) {
-
-    }
-
-    void userThumbClicked(CommentModel comment) {
-
-    }
-
-
-    void sendComment() {
-        commentInteractor.sendComment(post, text)
-                .subscribe(success -> {
-                    getView().hideKeyboard();
-                });
-    }
-
-    void controlSendView(Observable<CharSequence> text) {
-        commentInteractor.controlSendView(text)
-                .subscribe(getView()::setSendView);
     }
 
     private void realTimeProvider(RxFirebaseChildEvent<CommentModel> commentRxEvent) {
@@ -141,7 +135,10 @@ class CommentPresenter extends BasePresenter<CommentView, MainRouter> {
             case CHANGED:
                 //updateView
                 Log.e("RxCommentChanged", commentRxEvent.getValue().toString());
-                getView().updateCommentEvent(commentRxEvent.getValue());
+                convertCommentToAdapter(commentRxEvent.getValue(), user.getId())
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(getView()::updateCommentEvent);
                 break;
             case MOVED:
                 //do nothing
@@ -156,7 +153,28 @@ class CommentPresenter extends BasePresenter<CommentView, MainRouter> {
         }
     }
 
-    void controlTextChanges(Observable<CharSequence> charSequenceObservable) {
-        charSequenceObservable.subscribe(charSequence -> text = charSequence.toString());
+    private Observable<CommentModel> convertCommentToAdapter(CommentModel commentModel, long uId) {
+        return likeFilter(commentModel.getLikes(), uId)
+                .map(isLiked -> {
+                    commentModel.setLiked(isLiked);
+                    return commentModel;
+                });
+    }
+
+    private Observable<Boolean> likeFilter(Map<String, Like> likes, long uId) {
+        return Observable.just(likes)
+                .map(likes1 -> {
+                    if (likes1 != null)
+                        for (Like like :
+                                likes1.values())
+                            if (like.getAuthor().getuId() == uId)
+                                return true;
+
+                    return false;
+                });
+    }
+
+    void destroy() {
+        Injector.getInstance().clearCommentComponent();
     }
 }

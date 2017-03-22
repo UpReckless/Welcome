@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -142,7 +144,11 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Observable<Boolean> checkServerConnection() {
-        return restApi.checkServerConnection();
+        ConnectivityManager conMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (conMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED
+                || conMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED)
+            return restApi.checkServerConnection();
+        else return Observable.just(false);
     }
 
     private void cacheMainUser(RegistryRequest request, RegistryResponse response) {

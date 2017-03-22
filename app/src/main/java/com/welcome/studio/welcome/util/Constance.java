@@ -7,7 +7,7 @@ public class Constance {
     public static class ConstHolder {
         public static final int MAX_POST_LIMIT = 20;
         public static final int EMPTY_LIST_COUNT = 0;
-        public static final int RETRY_COUNT = 0;
+        public static final int RETRY_COUNT = 3;
     }
 
     public static class URL {

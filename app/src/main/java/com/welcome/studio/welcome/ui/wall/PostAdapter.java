@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.welcome.studio.welcome.R;
 import com.welcome.studio.welcome.model.data.Post;
@@ -54,7 +55,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             if (post.getContentRef() != null)
                 Picasso.with(context).load(Uri.parse(post.getContentRef())).error(R.drawable.drawer_header).into(holder.imgContent);
             else
-                Picasso.with(context).load(R.drawable.drawer_header).into(holder.imgContent);
+                Picasso.with(context).load(R.drawable.drawer_header).networkPolicy(NetworkPolicy.NO_CACHE,NetworkPolicy.NO_STORE).into(holder.imgContent);
             holder.txtAdress.setText(post.getAddress());
             holder.txtLikeCount.setText(post.getLikes() != null ? String.valueOf(post.getLikes().size()) : String.valueOf(0));
             holder.imgLike.setImageDrawable(context.getResources().getDrawable(post.isLiked() ? R.mipmap.ic_heart_grey600_36dp

@@ -13,13 +13,7 @@ interface CommentView {
 
     void addComment(CommentModel comment);
 
-    void refreshComments(int position);
-
-    void refreshComment(int position);
-
     void refresh();
-
-    void updateCommentView(CommentModel comment, int position);
 
     void setSendView(boolean enabled);
 

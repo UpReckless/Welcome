@@ -101,6 +101,13 @@ public class MainInteractorImpl implements MainInteractor {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    @Override
+    public Observable<Boolean> checkServerConnection() {
+        return userRepository.checkServerConnection()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
     private AuthRequest generateAuthRequest(User user, Address address) {
         return new AuthRequest(address.getLocality(), address.getCountryName(), user.getImei(), user.getId());
     }

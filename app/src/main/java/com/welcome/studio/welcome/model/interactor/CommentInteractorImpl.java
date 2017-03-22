@@ -50,17 +50,14 @@ public class CommentInteractorImpl implements CommentInteractor {
     }
 
     @Override
-    public Observable<Boolean> incLikeCount(CommentModel comment, Post post) {
-        return Observable.just(getUserCache())
-                .map(this::generateLike)
-                .switchMap(like -> firebaseRepository.incLikeCount(post, comment, like));
-    }
-
-    @Override
-    public Observable<Boolean> decLikeCount(CommentModel comment, Post post) {
-        return Observable.just(getUserCache())
-                .map(user -> findUserLike(comment, user))
-                .switchMap(like -> firebaseRepository.decLikeCount(post, comment, like));
+    public Observable<Boolean> changeLikeCount(CommentModel comment, Post post) {
+        User user = getUserCache();
+        return userRepository.checkServerConnection()
+                .switchMap(success -> success ? comment.isLiked() ? firebaseRepository.decLikeCount(post, comment, findUserLike(comment, user)) :
+                        firebaseRepository.incLikeCount(post, comment, generateLike(user)) : Observable.just(false))
+                .onErrorReturn(throwable -> false)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override

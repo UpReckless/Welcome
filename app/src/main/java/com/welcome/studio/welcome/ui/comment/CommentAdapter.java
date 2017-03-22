@@ -70,24 +70,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         comments.add(commentModel);
     }
 
-    public CommentModel getCommentAtPosition(int position) {
-        return position >= 0 && position < comments.size() ? comments.get(position) : null;
-    }
-
-    void updateCommentView(CommentModel comment, int position) {
-        try {
-            comments.set(position,comment);
-            notifyItemChanged(position);
-        }catch (Exception e){
-            Log.e("CommentAdapterUpdate",e.getMessage());
-        }
-    }
-
     void updateCommentEvent(CommentModel comment) {
         try {
             for (int i = 0; i < comments.size(); i++) {
                 if (comments.get(i).getId().equals(comment.getId())) {
-                    comment.setLiked(comments.get(i).isLiked());
                     comments.set(i, comment);
                     notifyItemChanged(i);
                     break;

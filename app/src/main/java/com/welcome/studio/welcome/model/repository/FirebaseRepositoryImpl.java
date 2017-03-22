@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -82,7 +83,7 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
 
     @Override
     public Observable<DatabaseReference> sharePost(Post post) {
-        Log.e("sharepost",post.toString());
+        Log.e("sharepost delete time",String.valueOf(new Date(post.getDeleteTime())));
         DatabaseReference postRef = firebaseDatabase.getReference("posts").child(post.getCountry()).child(post.getCity()).push();
         post.setId(postRef.getKey());
         return Observable.just(postRef.setValue(post)).map(res -> postRef);
@@ -138,7 +139,7 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
                 .child(post.getId())
                 .child("likes").push();
         like.setKey(ref.getKey());
-        return Observable.just(ref.setValue(like)).map(task->true);
+        return Observable.just(ref.setValue(like)).map(this::taskIsSuccess);
     }
 
     @Override
@@ -150,7 +151,7 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
                 .child(post.getId())
                 .child("likes")
                 .child(like.getKey());
-        return Observable.just(ref.removeValue()).map(task->true);
+        return Observable.just(ref.removeValue()).map(this::taskIsSuccess);
     }
 
     @Override
@@ -162,7 +163,7 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
                 .child(post.getId())
                 .child("willcomes").push();
         willcome.setKey(ref.getKey());
-        return Observable.just(ref.setValue(willcome)).map(Task::isSuccessful);
+        return Observable.just(ref.setValue(willcome)).map(this::taskIsSuccess);
     }
 
     @Override
@@ -174,7 +175,7 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
                 .child(post.getId())
                 .child("willcomes")
                 .child(willcome.getKey());
-        return Observable.just(ref.removeValue()).map(Task::isSuccessful);
+        return Observable.just(ref.removeValue()).map(this::taskIsSuccess);
     }
 
     @Override
@@ -186,7 +187,7 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
                 .child(post.getId())
                 .child("reports").push();
         report.setKey(ref.getKey());
-        return Observable.just(ref.setValue(report)).map(Task::isSuccessful);
+        return Observable.just(ref.setValue(report)).map(this::taskIsSuccess);
     }
 
     @Override
@@ -198,7 +199,7 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
                 .child(post.getId())
                 .child("reports")
                 .child(report.getKey());
-        return Observable.just(ref.removeValue()).map(Task::isSuccessful);
+        return Observable.just(ref.removeValue()).map(this::taskIsSuccess);
     }
 
     @Override
@@ -212,7 +213,7 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
                 .child(comment.getId())
                 .child("likes").push();
         like.setKey(ref.getKey());
-        return Observable.just(ref.setValue(like)).map(Task::isSuccessful);
+        return Observable.just(ref.setValue(like)).map(this::taskIsSuccess);
     }
 
     @Override
@@ -226,7 +227,7 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
                 .child(comment.getId())
                 .child("likes")
                 .child(like.getKey());
-        return Observable.just(ref.removeValue()).map(Task::isSuccessful);
+        return Observable.just(ref.removeValue()).map(this::taskIsSuccess);
     }
 
 
@@ -235,5 +236,21 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
                 tags)
             databaseReference.child("hashtags").child(country).child(city).child(tag.substring(1)).push().setValue(key);
         return true;
+    }
+
+    private boolean taskIsSuccess(Task<Void> task){
+        int i=0;
+        while (!task.isComplete()) {
+            if (i>1000)
+                break;
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            i++;
+        }
+        Log.e("iteration",i+"");
+        return task.isSuccessful();
     }
 }
