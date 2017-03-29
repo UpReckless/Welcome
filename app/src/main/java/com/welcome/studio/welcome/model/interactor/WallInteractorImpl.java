@@ -86,10 +86,14 @@ public class WallInteractorImpl implements WallInteractor {
         long currentTime = System.currentTimeMillis();
         return Observable.from(postRepository.getAllPosts())
                 .filter(post -> {
-                    Log.e("filter cache posts",String.valueOf(new Date(currentTime))+"  "+ String.valueOf(new Date(post.getDeleteTime())));
+                    Log.e("filter cache posts", String.valueOf(new Date(currentTime)) + "  " + String.valueOf(new Date(post.getDeleteTime())));
                     return user.getId() != post.getAuthor().getuId() || currentTime < post.getDeleteTime();
                 })
                 .buffer(MAX_POST_LIMIT)
+                .map(posts -> {
+                    Collections.reverse(posts);
+                    return posts;
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -148,7 +152,7 @@ public class WallInteractorImpl implements WallInteractor {
     public Observable<Boolean> changeReportCount(Post post) {
         User user = getUserCache();
         return userRepository.checkServerConnection()
-                .switchMap(connect -> connect ? post.isWillcomed() ? firebaseRepository.decReportCount(post, findUserReport(user, post)) :
+                .switchMap(connect -> connect ? post.isReported() ? firebaseRepository.decReportCount(post, findUserReport(user, post)) :
                         firebaseRepository.incReportCount(post, generateReport(user)) : Observable.just(false))
                 .subscribeOn(Schedulers.io())
                 .onErrorReturn(throwable -> false)

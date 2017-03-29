@@ -6,6 +6,13 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/colorPrimaryLight</item>
     </style>
+
+    <!--<style name="ToolbarStyle" parent="WelcomeMaterialTheme">-->
+        <!--<item name="textColorPrimary">@color/textColorPrimaryLight</item>-->
+        <!--<item name="textColorSecondary">@color/white</item>-->
+        <!--<item name="actionMenuTextColor">@color/white</item>-->
+    <!--</style>-->
 
 </resources>

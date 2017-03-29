@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/cardview_dark_background"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/cardview_light_background"
     android:orientation="vertical">
 
     <android.support.v7.widget.CardView
         android:id="@+id/card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        app:cardCornerRadius="4dp"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="28dp">
+        android:layout_alignParentTop="true"
+        android:layout_gravity="center"
+        android:layout_marginTop="28dp"
+        app:cardCornerRadius="4dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -23,10 +23,10 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:padding="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="16dp">
 
                 <com.subinkrishna.widget.CircularImageView
                     android:id="@+id/img_thumb"
@@ -35,6 +35,7 @@
 
                 <TextView
                     android:id="@+id/txt_rating"
+                    android:textColor="@color/colorRating"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -48,16 +49,17 @@
                     android:layout_gravity="center"
                     android:paddingLeft="8dp"
                     android:text="SuperVasya" />
+
                 <Space
-                    android:layout_weight="1"
                     android:layout_width="0dp"
-                    android:layout_height="0dp" />
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
 
                 <TextView
                     android:id="@+id/txt_report_count"
-                    android:layout_gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:text="2" />
 
                 <ImageView
@@ -65,69 +67,174 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:src="@mipmap/ic_alert_octagon_grey600_36dp" />
+                    android:src="@mipmap/ic_report" />
             </LinearLayout>
-            <TextView
-                android:paddingLeft="16dp"
-                android:text="address"
-                android:id="@+id/txt_address"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-            <ImageView
-                android:src="@drawable/toolbar_background"
-                android:id="@+id/img_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-            <LinearLayout
-                android:padding="16dp"
-                android:orientation="horizontal"
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
+                <com.welcome.studio.welcome.squarecamera_mock.SquareImageView
+                    android:id="@+id/img_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="1000sp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/load_holder"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentStart="true" />
+
+                <ProgressBar
+                    android:visibility="invisible"
+                    android:id="@+id/progress_bar"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true" />
+                <ImageView
+                    android:visibility="gone"
+                    android:id="@+id/img_restore"
+                    android:src="@mipmap/ic_update_black_48dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true" />
+
+                <ImageView
+                    android:id="@+id/img_delete"
+                    android:visibility="gone"
+                    android:src="@mipmap/ic_delete_forever_black_36dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/img_restore"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginRight="16dp"/>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
                 <ImageView
                     android:id="@+id/img_like"
-                    android:src="@mipmap/ic_heart_outline_grey600_36dp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/ic_like" />
+
                 <TextView
                     android:id="@+id/txt_like_count"
-                    android:paddingLeft="8dp"
-                    android:text="27"
-                    android:layout_gravity="center"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <Space
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp" />
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:paddingRight="8dp"
+                    android:text="27"
+                    android:textColor="@color/textColorPrimary" />
+
                 <ImageView
                     android:id="@+id/img_comment"
-                    android:src="@mipmap/ic_comment_outline_grey600_36dp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/ic_comment" />
+
                 <TextView
-                    android:layout_gravity="center"
-                    android:text="4"
                     android:id="@+id/txt_comment_count"
-                    android:paddingLeft="8dp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <Space
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp" />
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:paddingRight="8dp"
+                    android:text="42"
+                    android:textColor="@color/textColorPrimary" />
+
                 <ImageView
                     android:id="@+id/img_willcome"
-                    android:src="@mipmap/ic_human_greeting_grey600_36dp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/ic_willcome" />
+
                 <TextView
-                    android:layout_gravity="center"
-                    android:text="4"
                     android:id="@+id/txt_willcome_count"
-                    android:paddingLeft="8dp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:text="4"
+                    android:textColor="@color/textColorPrimary" />
+
+                <android.support.v4.widget.Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <ImageView
+                    android:id="@+id/map_item"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/ic_map_marker" />
+
+                <TextView
+                    android:id="@+id/txt_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="T.umetaliev street" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorDivider" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingTop="8dp">
+
+
+                    <TextView
+                        android:id="@+id/txt_description"
+                        android:layout_width="220sp"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="8dp"
+                        android:text="asdasdasds" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1">
+
+                        <ImageView
+                            android:id="@+id/img_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:src="@mipmap/ic_time" />
+
+                        <TextView
+                            android:id="@+id/txt_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="16:30 - 12:00" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <com.welcome.studio.welcome.util.tagview.TagsView
+                android:id="@+id/tags_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp" />
+
         </LinearLayout>
 
     </android.support.v7.widget.CardView>

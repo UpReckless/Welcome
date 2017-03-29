@@ -17,7 +17,7 @@
             android:textStyle="italic"
             android:layout_gravity="center"
             android:id="@+id/txt_rating"
-            android:textColor="@color/textColorSecondary"
+            android:textColor="@color/colorRating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <TextView

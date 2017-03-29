@@ -25,4 +25,6 @@ interface WallView {
     void setUserPost(Post post);
 
     void updateUserPost(Post post);
+
+    void showProgressBar(boolean b);
 }

@@ -11,7 +11,7 @@ public class Constance {
     }
 
     public static class URL {
-        public static final String HOST = "http://wlcome.mycloud.by/";
+        public static final String HOST = "http://192.168.3.111:8080/";
         public static final String CHECK_SERVER_CONNECTION = "user/connection";
 
         public static final String USER_REG = "user/reg";

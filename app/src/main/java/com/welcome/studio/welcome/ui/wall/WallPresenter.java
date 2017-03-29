@@ -18,7 +18,6 @@ import com.welcome.studio.welcome.model.interactor.WallInteractor;
 import com.welcome.studio.welcome.ui.BasePresenter;
 import com.welcome.studio.welcome.ui.main.MainRouter;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +47,7 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
     private Subscription busPostEventSubscription;
     private Subscription busUserPostSubscription;
     private User user;
+    private boolean isSharing;
 
     @Inject
     WallPresenter(WallInteractor wallInteractor, MainInteractor mainInteractor, Lazy<RxPermissions> rxPermissions, RxBus bus) {
@@ -85,6 +85,8 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
 
 
     void controlPaging(RecyclerView recyclerView) {
+        if (pagingSubscription == null)
+            getView().showProgressBar(true);
         mainInteractor.checkServerConnection()
                 .subscribe(success -> {
                     if (success) {
@@ -98,10 +100,13 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
                     } else {
                         if (pagingSubscription == null)
                             pagingSubscription = wallInteractor.getCachedPosts()
-                                    .subscribe(posts -> {
-                                        Collections.reverse(posts);
-                                        getView().addPosts(posts);
-                                        getView().refreshPosts(recyclerView.getAdapter().getItemCount() - posts.size());
+                                    .subscribe(postList -> {
+                                        convertPostsToAdapter(postList, user.getId())
+                                                .subscribe(posts -> {
+                                                    getView().showProgressBar(false);
+                                                    getView().addPosts(posts);
+                                                    getView().refreshPosts(recyclerView.getAdapter().getItemCount() - posts.size());
+                                                });
                                     });
                     }
                 });
@@ -135,15 +140,35 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
     }
 
     private void busEventUserPost(Post post) {
+        isSharing = true;
         getView().setUserPost(post);
-        wallInteractor.sharePost(post)
-                .subscribe(success -> {
-                    if (!success) Log.e("userPost", "failed");
-                }, throwable -> Log.e("userPostEr", "faild", throwable));
+        mainInteractor.checkServerConnection().subscribe(success -> {
+            if (success) {
+                wallInteractor.sharePost(post)
+                        .subscribe(success1 -> {
+                            isSharing = false;
+                            if (!success1) {
+                                Log.e("userPost", "failed");
+                                post.setTryToUpload(true);
+                                getView().setUserPost(post);
+                            }
+                        }, throwable -> {
+                            Log.e("userPostEr", "faild", throwable);
+                            isSharing=false;
+                            post.setTryToUpload(true);
+                            getView().setUserPost(post);
+                        });
+            } else {
+                post.setTryToUpload(true);
+                getView().setUserPost(post);
+            }
+        });
+
     }
 
     private void busEventPostList(List<Post> posts, RecyclerView recyclerView) {
         if (getView() != null) {
+            getView().showProgressBar(false);
             convertPostsToAdapter(posts, user.getId())
                     .subscribe(posts1 -> {
                         getView().addPosts(posts1);
@@ -247,6 +272,8 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
             pagingSubscription.unsubscribe();
         if (busPostEventSubscription != null)
             busPostEventSubscription.unsubscribe();
+        if (busUserPostSubscription != null)
+            busUserPostSubscription.unsubscribe();
         if (listenSubscription != null)
             listenSubscription.unsubscribe();
         Injector.getInstance().clearWallComponent();
@@ -254,5 +281,10 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
 
     void commentClicked(Post post) {
         getRouter().navigateToComment(post);
+    }
+
+    void refreshAll() {
+        if (!isSharing)
+            getRouter().navigateToWall();
     }
 }

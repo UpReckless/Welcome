@@ -2,6 +2,7 @@ package com.welcome.studio.welcome.ui.main;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -76,6 +77,12 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Injector.getInstance().clearMainComponent();
+    }
+
+    @Override
     public void setDrawer() {
         accountHeader = new AccountHeaderBuilder()
                 .withActivity(this)
@@ -86,8 +93,7 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
         accountHeader.getHeaderBackgroundView().setOnClickListener((v -> {
             drawer.deselect();
             drawer.closeDrawer();
-//            Profile profileFrg=Profile.getInstance();
-//            getSupportFragmentManager().beginTransaction().replace(R.id.container,profile,profile.getFragmentTag).commit();
+
         }));
         initDrawer();
     }
@@ -191,14 +197,15 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
         if (getSupportActionBar() != null) {
             if (drawer == null) initDrawer();
             if (isAddedToBackStack) {
-                toolbar.setNavigationIcon(R.mipmap.ic_arrow_back_black_24dp);
+                toolbar.setNavigationIcon(R.mipmap.ic_arrow_back_white_24dp);
                 toolbar.setNavigationOnClickListener(v -> onBackPressed());
                 drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             } else if (drawer != null) {
-                toolbar.setNavigationIcon(R.mipmap.ic_menu_black_24dp);
+                toolbar.setNavigationIcon(R.mipmap.ic_menu_white_24dp);
                 drawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                 drawer.setToolbar(this, toolbar);
             }
+            toolbar.setTitleTextColor(Color.WHITE);
             toolbar.setTitle(title);
         }
     }

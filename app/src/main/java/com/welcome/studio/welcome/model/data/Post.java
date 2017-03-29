@@ -41,6 +41,8 @@ public class Post implements Serializable {
     private boolean isWillcomed;
     @Exclude
     private boolean isReported;
+    @Exclude
+    private boolean isTryToUpload;
 
     public Post(){}
 
@@ -238,5 +240,14 @@ public class Post implements Serializable {
 
     public void setReported(boolean reported) {
         isReported = reported;
+    }
+
+    @Exclude
+    public boolean isTryToUpload() {
+        return isTryToUpload;
+    }
+
+    public void setTryToUpload(boolean tryToUpload) {
+        isTryToUpload = tryToUpload;
     }
 }

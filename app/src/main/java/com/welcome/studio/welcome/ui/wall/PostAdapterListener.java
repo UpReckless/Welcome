@@ -16,4 +16,6 @@ interface PostAdapterListener {
     void commentClicked(Post post);
 
     void userThumbClicked(Post post);
+
+    void tryAgainClicked(Post post);
 }
