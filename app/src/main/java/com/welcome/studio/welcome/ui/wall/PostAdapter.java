@@ -57,7 +57,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 initPost(holder, post, false);
                 initItems(holder, post);
             }
-        }else onBindViewHolder(holder, position);
+        } else onBindViewHolder(holder, position);
     }
 
     @Override
@@ -152,7 +152,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     }
 
     private void initAuthor(ViewHolder holder, Post post) {
-        Picasso.with(context).load(post.getAuthor().getThumbRef()).error(R.mipmap.img_avatar).into(holder.imgThumb);
+        Picasso.with(context).load(post.getAuthor().getThumbRef()).networkPolicy(NetworkPolicy.OFFLINE)
+                .into(holder.imgThumb, new Callback() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onError() {
+                        Picasso.with(context).load(Uri.parse(post.getContentRef())).error(R.drawable.load_holder).into(holder.imgContent);
+                    }
+                });
         holder.txtRating.setText(String.valueOf(Helper.countRating(post.getAuthor().getRating())));
         holder.txtName.setText(post.getAuthor().getName());
     }

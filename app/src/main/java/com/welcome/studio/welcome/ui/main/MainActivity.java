@@ -1,12 +1,9 @@
 package com.welcome.studio.welcome.ui.main;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -19,10 +16,8 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
-import com.squareup.picasso.MemoryPolicy;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 import com.welcome.studio.welcome.R;
 import com.welcome.studio.welcome.app.Injector;
 import com.welcome.studio.welcome.app.RxBus;
@@ -33,10 +28,7 @@ import com.welcome.studio.welcome.ui.comment.Comment;
 import com.welcome.studio.welcome.ui.profile.Profile;
 import com.welcome.studio.welcome.ui.registry.Registry;
 import com.welcome.studio.welcome.ui.wall.Wall;
-import com.welcome.studio.welcome.util.CircleTransform;
 import com.welcome.studio.welcome.util.Constance;
-
-import java.io.File;
 
 import javax.inject.Inject;
 
@@ -50,22 +42,6 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
 
     private Drawer drawer;
     private AccountHeader accountHeader;
-    private Target target = new Target() {
-        @Override
-        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-            presenter.onBitmapLoaded(bitmap, from);
-        }
-
-        @Override
-        public void onBitmapFailed(Drawable errorDrawable) {
-
-        }
-
-        @Override
-        public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,12 +59,17 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
     }
 
     @Override
-    public void setDrawer() {
+    public void setDrawer(User user) {
         accountHeader = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withOnAccountHeaderProfileImageListener(this)
                 .withHeaderBackground(R.drawable.drawer_header)
                 .withSelectionListEnabled(false)
+                .addProfiles(new ProfileDrawerItem()
+                        .withName(user.getNickname())
+                        .withIdentifier(1)
+                        .withEmail(user.getCity())
+                        .withIcon(Uri.parse(user.getPhotoRef())))
                 .build();
         accountHeader.getHeaderBackgroundView().setOnClickListener((v -> {
             drawer.deselect();
@@ -97,32 +78,6 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
         }));
         initDrawer();
     }
-
-    @Override
-    public void loadProfileImage(Picasso.Listener listener, String photoPath) {
-        new Picasso.Builder(this).listener(listener).build()
-                .load(new File(photoPath))
-                .transform(new CircleTransform())
-                .into(target);
-    }
-
-    @Override
-    public void loadProfileImage(Uri uri) {
-        Picasso.with(this).load(uri).memoryPolicy(MemoryPolicy.NO_STORE).transform(new CircleTransform()).into(target);
-    }
-
-    @Override
-    public void loadProfileImage(@DrawableRes int res) {
-        Picasso.with(this).load(res).transform(new CircleTransform()).into(target);
-    }
-
-    @Override
-    public void updateProfile(IProfile profile) {
-        if (accountHeader.getProfiles().size() == 0)
-            accountHeader.addProfiles(profile);
-        else accountHeader.updateProfile(profile);
-    }
-
 
     @Override
     public void onBackPressed() {
@@ -140,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
                 .withActionBarDrawerToggle(false)
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
                     drawer.closeDrawer();
-                    presenter.onDrawerItemCLick(position, drawerItem);
+                    presenter.onDrawerItemCLick(position);
                     return true;
                 })
                 .withOnDrawerNavigationListener(clickedView -> {

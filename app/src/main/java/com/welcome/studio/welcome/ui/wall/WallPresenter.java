@@ -101,12 +101,14 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
                         if (pagingSubscription == null)
                             pagingSubscription = wallInteractor.getCachedPosts()
                                     .subscribe(postList -> {
-                                        convertPostsToAdapter(postList, user.getId())
-                                                .subscribe(posts -> {
-                                                    getView().showProgressBar(false);
-                                                    getView().addPosts(posts);
-                                                    getView().refreshPosts(recyclerView.getAdapter().getItemCount() - posts.size());
-                                                });
+                                        if (postList.size() > 0)
+                                            convertPostsToAdapter(postList, user.getId())
+                                                    .subscribe(posts -> {
+                                                        getView().showProgressBar(false);
+                                                        getView().addPosts(posts);
+                                                        getView().refreshPosts(recyclerView.getAdapter().getItemCount() - posts.size());
+                                                    });
+                                        else getView().showProgressBar(false);
                                     });
                     }
                 });
@@ -154,7 +156,7 @@ class WallPresenter extends BasePresenter<WallView, MainRouter> {
                             }
                         }, throwable -> {
                             Log.e("userPostEr", "faild", throwable);
-                            isSharing=false;
+                            isSharing = false;
                             post.setTryToUpload(true);
                             getView().setUserPost(post);
                         });

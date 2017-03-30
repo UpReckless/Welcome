@@ -1,14 +1,23 @@
 package com.welcome.studio.welcome.app;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
+import android.widget.ImageView;
 
 import com.devs.acr.AutoErrorReporter;
 import com.jakewharton.picasso.OkHttp3Downloader;
+import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
+import com.mikepenz.materialdrawer.util.DrawerImageLoader;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.welcome.studio.welcome.BuildConfig;
+import com.welcome.studio.welcome.R;
 import com.welcome.studio.welcome.model.NetworkModule;
+import com.welcome.studio.welcome.util.CircleTransform;
 import com.welcome.studio.welcome.util.UtilsModule;
 
 import okhttp3.Cache;
@@ -37,6 +46,7 @@ public class App extends MultiDexApplication {
         appComponent = buildComponent();
         appComponent.inject(this);
         initPicasso();
+        initDrawerProfile();
     }
 
     public static AppComponent getComponent() {
@@ -66,5 +76,32 @@ public class App extends MultiDexApplication {
                 .downloader(okHttp3Downloader)
                 .build();
         Picasso.setSingletonInstance(picasso);
+    }
+
+    private void initDrawerProfile(){
+        DrawerImageLoader.init(new AbstractDrawerImageLoader() {
+            @Override
+            public void set(ImageView imageView, Uri uri, Drawable placeholder) {
+                Picasso.with(getApplicationContext()).load(uri).networkPolicy(NetworkPolicy.OFFLINE)
+                        .placeholder(placeholder)
+                        .transform(new CircleTransform())
+                        .into(imageView, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError() {
+                                Picasso.with(getApplicationContext()).load(uri).error(R.mipmap.img_avatar).transform(new CircleTransform()).into(imageView);
+                            }
+                        });
+            }
+
+            @Override
+            public void cancel(ImageView imageView) {
+                Picasso.with(getApplicationContext()).cancelRequest(imageView);
+            }
+        });
     }
 }

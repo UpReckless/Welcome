@@ -84,7 +84,15 @@ public class WallInteractorImpl implements WallInteractor {
     public Observable<List<Post>> getCachedPosts() {
         User user = getUserCache();
         long currentTime = System.currentTimeMillis();
-        return Observable.from(postRepository.getAllPosts())
+        return Observable.just(postRepository.getAllPosts())
+                .flatMap(postList -> postList.size() > 0 ? filterCachedPost(postList, user, currentTime)
+                        : Observable.just(postList))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private Observable<List<Post>> filterCachedPost(List<Post> postList, User user, long currentTime) {
+        return Observable.from(postList)
                 .filter(post -> {
                     Log.e("filter cache posts", String.valueOf(new Date(currentTime)) + "  " + String.valueOf(new Date(post.getDeleteTime())));
                     return user.getId() != post.getAuthor().getuId() || currentTime < post.getDeleteTime();
@@ -94,8 +102,7 @@ public class WallInteractorImpl implements WallInteractor {
                     Collections.reverse(posts);
                     return posts;
                 })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(Schedulers.computation());
     }
 
 
