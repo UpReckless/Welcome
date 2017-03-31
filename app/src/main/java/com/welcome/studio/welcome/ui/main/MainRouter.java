@@ -15,4 +15,6 @@ public interface MainRouter {
     void navigateToPhoto();
 
     void navigateToComment(Post post);
+
+    void navigateToPostWatcher(Post post);
 }

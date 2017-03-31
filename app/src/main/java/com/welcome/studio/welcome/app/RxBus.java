@@ -16,34 +16,44 @@ import rx.subjects.Subject;
  */
 
 public final class RxBus {
-    private final Subject<List<Post>,List<Post>> postListBus=new SerializedSubject<>(PublishSubject.create());
-    private final Subject<PostEvent,PostEvent> postEventBus=new SerializedSubject<>(PublishSubject.create());
-    private final Subject<Post, Post> userPostBus=new SerializedSubject<>(PublishSubject.create());
+    private final Subject<List<Post>, List<Post>> postListBus = new SerializedSubject<>(PublishSubject.create());
+    private final Subject<PostEvent, PostEvent> postEventBus = new SerializedSubject<>(PublishSubject.create());
+    private final Subject<Post, Post> userPostBus = new SerializedSubject<>(PublishSubject.create());
+//    private final Subject<PostEvent, PostEvent> profilePostEvent = new SerializedSubject<>(PublishSubject.create());
 
-    public void sendPostList(List<Post> posts){
+    public void sendPostList(List<Post> posts) {
         postListBus.onNext(posts);
     }
 
-    public Observable<List<Post>> getPostList(){
+    public Observable<List<Post>> getPostList() {
         return postListBus.observeOn(AndroidSchedulers.mainThread());
     }
 
-    public void sendPostEvent(PostEvent postEvent){
+    public void sendPostEvent(PostEvent postEvent) {
         postEventBus.onNext(postEvent);
     }
 
-    public Observable<PostEvent> getPostEvent(){
+    public Observable<PostEvent> getPostEvent() {
         return postEventBus.observeOn(AndroidSchedulers.mainThread());
     }
 
-    public void sendUserPost(Post post){
+    public void sendUserPost(Post post) {
         userPostBus.onNext(post);
     }
 
-    public Observable<Post> getUserPostEvent(){
+    public Observable<Post> getUserPostEvent() {
         return userPostBus.observeOn(AndroidSchedulers.mainThread());
     }
-    public boolean hasObservers(Subject subject){
+
+//    public void setProfilePostEvent(PostEvent postEvent) {
+//        profilePostEvent.onNext(postEvent);
+//    }
+//
+//    public Observable<PostEvent> getProfilePostEvent() {
+//        return profilePostEvent;
+//    }
+
+    public boolean hasObservers(Subject subject) {
         return subject.hasObservers();
     }
 }

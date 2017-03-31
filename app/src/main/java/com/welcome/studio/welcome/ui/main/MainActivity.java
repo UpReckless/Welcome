@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
                         .withIcon(Uri.parse(user.getPhotoRef())))
                 .build();
         accountHeader.getHeaderBackgroundView().setOnClickListener((v -> {
+            presenter.onProfileClick();
             drawer.deselect();
             drawer.closeDrawer();
 
@@ -224,5 +225,14 @@ public class MainActivity extends AppCompatActivity implements View, AccountHead
                 .replace(R.id.container, comment, comment.getTag())
                 .addToBackStack(null)
                 .commit();
+    }
+
+    @Override
+    public void navigateToPostWatcher(Post post) {
+//        PostWatcher postWatcher=PostWatcher.newInstance(post);
+//        getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.container,postWatcher,postWatcher.getTag())
+//                .addToBackStack(null)
+//                .commit();
     }
 }

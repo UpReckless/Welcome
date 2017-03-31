@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -22,8 +21,6 @@ import com.welcome.studio.welcome.model.entity.RegistryRequest;
 import com.welcome.studio.welcome.model.entity.RegistryResponse;
 import com.welcome.studio.welcome.model.entity.UpdateUserRequest;
 import com.welcome.studio.welcome.model.entity.UpdateUserResponse;
-import com.welcome.studio.welcome.util.Constance;
-import com.welcome.studio.welcome.util.Helper;
 
 import java.io.IOException;
 
@@ -124,16 +121,6 @@ public class UserRepositoryImpl implements UserRepository {
                 }
             }
         });
-    }
-
-    @Override
-    public void downloadMyMainPhotoBitmap(Bitmap bitmap) {
-        try {
-            String photoPath = Helper.savePhotoToDirectory(bitmap, Constance.AppDirectoryHolder.MAIN_PHOTO_DIR_PATH);
-            spf.edit().putString(PHOTO_PATH, photoPath).apply();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

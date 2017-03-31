@@ -63,7 +63,7 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
         StorageReference storageReference = firebaseStorage.getReferenceFromUrl(Constance.URL.FIREBASE_STORAGE);
         Uri uri = Uri.parse(path);
         InputStream is = new FileInputStream(new File(path));
-        Log.e("upload path",uri.toString());
+        Log.e("upload path", uri.toString());
         return RxFirebaseStorage.putStream(storageReference.child(id + "/" + uri.getLastPathSegment()), is)
                 .map(UploadTask.TaskSnapshot::getDownloadUrl)
                 .doOnNext(uri1 -> {
@@ -83,7 +83,7 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
 
     @Override
     public Observable<DatabaseReference> sharePost(Post post) {
-        Log.e("sharepost delete time",String.valueOf(new Date(post.getDeleteTime())));
+        Log.e("sharepost delete time", String.valueOf(new Date(post.getDeleteTime())));
         DatabaseReference postRef = firebaseDatabase.getReference("posts").child(post.getCountry()).child(post.getCity()).push();
         post.setId(postRef.getKey());
         return Observable.just(postRef.setValue(post)).map(res -> postRef);
@@ -238,10 +238,10 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
         return true;
     }
 
-    private boolean taskIsSuccess(Task<Void> task){
-        int i=0;
+    private boolean taskIsSuccess(Task<Void> task) {
+        int i = 0;
         while (!task.isComplete()) {
-            if (i>1000)
+            if (i > 1000)
                 break;
             try {
                 Thread.sleep(10);
@@ -250,7 +250,7 @@ public class FirebaseRepositoryImpl implements FirebaseRepository {
             }
             i++;
         }
-        Log.e("iteration",i+"");
+        Log.e("iteration", i + "");
         return task.isSuccessful();
     }
 }

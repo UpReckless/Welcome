@@ -1,7 +1,6 @@
 package com.welcome.studio.welcome.model.repository;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 
 import com.welcome.studio.welcome.model.data.Rating;
 import com.welcome.studio.welcome.model.data.User;
@@ -33,8 +32,6 @@ public interface UserRepository {
     Observable<Void> saveLanguage(int x);
 
     Observable<String> findPhoto(Intent data);
-
-    void downloadMyMainPhotoBitmap(Bitmap bitmap);
 
     Observable<Rating> getRating(long id);
 

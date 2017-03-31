@@ -1,7 +1,7 @@
 package com.welcome.studio.welcome.ui.profile;
 
 import com.welcome.studio.welcome.ui.profile.history.History;
-import com.welcome.studio.welcome.ui.profile.today.Today;
+import com.welcome.studio.welcome.ui.profile.today.Now;
 
 import dagger.Subcomponent;
 
@@ -13,5 +13,5 @@ import dagger.Subcomponent;
 public interface ProfileComponent {
     void inject(Profile profile);
     void inject(History history);
-    void inject(Today today);
+    void inject(Now now);
 }

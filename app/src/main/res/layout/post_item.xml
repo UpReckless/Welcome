@@ -16,8 +16,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_gravity="center"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
+        app:cardUseCompatPadding="true"
         app:cardElevation="4dp"
         app:cardCornerRadius="4dp">
 

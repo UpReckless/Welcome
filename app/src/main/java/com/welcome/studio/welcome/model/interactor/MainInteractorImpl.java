@@ -1,13 +1,12 @@
 package com.welcome.studio.welcome.model.interactor;
 
-import android.graphics.Bitmap;
 import android.location.Address;
 import android.net.Uri;
 import android.util.Log;
 
 import com.google.firebase.auth.AuthResult;
-import com.welcome.studio.welcome.model.entity.AuthRequest;
 import com.welcome.studio.welcome.model.data.User;
+import com.welcome.studio.welcome.model.entity.AuthRequest;
 import com.welcome.studio.welcome.model.entity.UpdateUserRequest;
 import com.welcome.studio.welcome.model.entity.UpdateUserResponse;
 import com.welcome.studio.welcome.model.repository.FirebaseRepository;
@@ -18,7 +17,6 @@ import java.io.FileNotFoundException;
 
 import javax.inject.Inject;
 
-import rx.Completable;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -81,24 +79,6 @@ public class MainInteractorImpl implements MainInteractor {
     @Override
     public User getUserCache() {
         return userRepository.getUserCache();
-    }
-
-    @Override
-    public Observable<Uri> downloadMyMainPhotoUri() {
-        User user = userRepository.getUserCache();
-        return Observable.just(user.getPhotoRef())
-                .flatMap(firebaseRepository::getDownloadUrl)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    @Override
-    public Completable downloadMyMainPhotoBitmap(Bitmap bitmap) {
-        return Completable.create(subscriber -> {
-            userRepository.downloadMyMainPhotoBitmap(bitmap);
-            subscriber.onCompleted();
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override

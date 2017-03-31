@@ -87,6 +87,10 @@ public class WallInteractorImpl implements WallInteractor {
         return Observable.just(postRepository.getAllPosts())
                 .flatMap(postList -> postList.size() > 0 ? filterCachedPost(postList, user, currentTime)
                         : Observable.just(postList))
+                .map(posts -> {
+                    Collections.reverse(posts);
+                    return posts;
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -98,10 +102,7 @@ public class WallInteractorImpl implements WallInteractor {
                     return user.getId() != post.getAuthor().getuId() || currentTime < post.getDeleteTime();
                 })
                 .buffer(MAX_POST_LIMIT)
-                .map(posts -> {
-                    Collections.reverse(posts);
-                    return posts;
-                })
+
                 .subscribeOn(Schedulers.computation());
     }
 
@@ -112,6 +113,7 @@ public class WallInteractorImpl implements WallInteractor {
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(Schedulers.io())
                 .flatMap(user -> firebaseRepository.listenPosts(user.getCountry(), user.getCity()))
+                .observeOn(Schedulers.computation())
                 .subscribe(this::realtimeProvider);
     }
 

@@ -6,7 +6,7 @@ import com.welcome.studio.welcome.model.data.Post;
  * Created by @mistreckless on 27.02.2017. !
  */
 
-interface PostAdapterListener {
+public interface PostAdapterListener {
     void likeClicked(Post post);
 
     void willcomeClicked(Post post);

@@ -1,9 +1,9 @@
-package com.welcome.studio.welcome.ui.profile.history;
+package com.welcome.studio.welcome.ui.profile.today;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
@@ -14,6 +14,8 @@ import com.welcome.studio.welcome.ui.BaseMainFragment;
 import com.welcome.studio.welcome.ui.BasePresenter;
 import com.welcome.studio.welcome.ui.Layout;
 import com.welcome.studio.welcome.ui.profile.ProfileModule;
+import com.welcome.studio.welcome.ui.wall.PostAdapter;
+import com.welcome.studio.welcome.ui.wall.PostAdapterListener;
 
 import java.util.List;
 
@@ -22,29 +24,29 @@ import javax.inject.Inject;
 import butterknife.Bind;
 
 /**
- * Created by Royal on 16.01.2017. !
+ * Created by @mistreckless on 16.01.2017. !
  */
-@Layout(id=R.layout.fragment_history)
-public class History extends BaseMainFragment implements HistoryView, HistoryAdapterListener {
-    @Bind(R.id.recycler_view)
-    RecyclerView recyclerView;
-    @Inject
-    HistoryPresenter presenter;
+@Layout(id = R.layout.fragment_now)
+public class Now extends BaseMainFragment implements NowView, PostAdapterListener {
 
-    private HistoryAdapter historyAdapter;
-    private static final int MAX_COLUMNS=3;
+    @Inject
+    NowPresenter presenter;
+    @Bind(R.id.rec_posts_view)
+    RecyclerView recPostView;
+
+    private PostAdapter postAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        historyAdapter=new HistoryAdapter(getContext(),this);
+        postAdapter=new PostAdapter(getContext(),this);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(),MAX_COLUMNS));
-        recyclerView.setAdapter(historyAdapter);
+        recPostView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recPostView.setAdapter(postAdapter);
     }
 
     @Override
@@ -85,13 +87,48 @@ public class History extends BaseMainFragment implements HistoryView, HistoryAda
     }
 
     @Override
-    public void postClicked(Post post) {
-        presenter.postClicked(post);
+    public void likeClicked(Post post) {
+
     }
 
     @Override
-    public void setPostsToAdapter(List<Post> posts) {
-        historyAdapter.setPostList(posts);
-        historyAdapter.notifyDataSetChanged();
+    public void willcomeClicked(Post post) {
+
+    }
+
+    @Override
+    public void reportClicked(Post post) {
+
+    }
+
+    @Override
+    public void commentClicked(Post post) {
+
+    }
+
+    @Override
+    public void userThumbClicked(Post post) {
+
+    }
+
+    @Override
+    public void tryAgainClicked(Post post) {
+
+    }
+
+    @Override
+    public void setPostList(List<Post> posts) {
+        postAdapter.addPosts(posts);
+        postAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void changePost(Post post) {
+        postAdapter.updatePost(post);
+    }
+
+    @Override
+    public void removePost(Post post) {
+        postAdapter.removePost(post);
     }
 }

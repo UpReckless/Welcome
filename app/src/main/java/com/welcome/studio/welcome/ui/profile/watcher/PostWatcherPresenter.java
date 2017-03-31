@@ -1,4 +1,4 @@
-package com.welcome.studio.welcome.ui.profile.today;
+package com.welcome.studio.welcome.ui.profile.watcher;
 
 import com.welcome.studio.welcome.ui.BasePresenter;
 import com.welcome.studio.welcome.ui.main.MainRouter;
@@ -6,13 +6,13 @@ import com.welcome.studio.welcome.ui.main.MainRouter;
 import javax.inject.Inject;
 
 /**
- * Created by Royal on 11.02.2017. !
+ * Created by @mistreckless on 31.03.2017. !
  */
 
-class TodayPresenter extends BasePresenter<TodayView,MainRouter> {
+public class PostWatcherPresenter extends BasePresenter<PostWatcherView,MainRouter> {
 
     @Inject
-    TodayPresenter(){
+    PostWatcherPresenter(){
 
     }
 

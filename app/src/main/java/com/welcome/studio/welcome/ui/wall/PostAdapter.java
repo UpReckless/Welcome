@@ -37,7 +37,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     private List<Post> postList;
     private PostAdapterListener listener;
 
-    PostAdapter(Context context, PostAdapterListener listener) {
+    public PostAdapter(Context context, PostAdapterListener listener) {
         this.context = context;
         this.listener = listener;
         postList = new ArrayList<>();
@@ -199,7 +199,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         }
     }
 
-    void addPosts(List<Post> posts) {
+    public void addPosts(List<Post> posts) {
         postList.addAll(posts);
     }
 
@@ -207,7 +207,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         return position >= 0 && position < postList.size() ? postList.get(position) : null;
     }
 
-    void removePost(Post post) {
+    public void removePost(Post post) {
         try {
             for (int i = 0; i < postList.size(); i++) {
                 if (postList.get(i).getId().equals(post.getId())) {
@@ -222,7 +222,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         }
     }
 
-    void updatePost(Post post) {
+    public void updatePost(Post post) {
         try {
             for (int i = 0; i < postList.size(); i++) {
                 if (postList.get(i).getId().equals(post.getId())) {

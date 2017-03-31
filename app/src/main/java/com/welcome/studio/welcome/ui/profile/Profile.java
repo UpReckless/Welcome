@@ -59,6 +59,7 @@ public class Profile extends BaseMainFragment implements ProfileView {
     ProfilePresenter presenter;
 
     private User user;
+    private ProfileAdapter adapter;
 
     public static Profile newInstance(User user){
         Profile profile=new Profile();
@@ -72,22 +73,29 @@ public class Profile extends BaseMainFragment implements ProfileView {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         user=(User) getArguments().get("user");
+        adapter = new ProfileAdapter(getChildFragmentManager(),
+                getResources().getString(R.string.now), getResources().getString(R.string.history));
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        viewPager.setAdapter(adapter);
+        tabLayout.setDistributeEvenly(true);
+        tabLayout.setViewPager(viewPager);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        adapter=null;
+        user=null;
+        presenter.destroy();
     }
 
     @Override
     protected Object getRouter() {
         return getActivity();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        presenter.onStart();
-        ProfileAdapter adapter = new ProfileAdapter(getChildFragmentManager(),
-                getResources().getString(R.string.today), getResources().getString(R.string.history));
-        viewPager.setAdapter(adapter);
-        tabLayout.setDistributeEvenly(true);
-        tabLayout.setViewPager(viewPager);
     }
 
     @NonNull

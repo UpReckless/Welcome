@@ -5,6 +5,7 @@ import android.content.Context;
 import com.esotericsoftware.kryo.Kryo;
 import com.snappydb.DB;
 import com.snappydb.DBFactory;
+import com.snappydb.KeyIterator;
 import com.snappydb.SnappydbException;
 import com.welcome.studio.welcome.model.data.Post;
 import com.welcome.studio.welcome.util.Constance;
@@ -55,10 +56,11 @@ public class PostRepositoryImpl implements PostRepository {
         DB snappyDb = null;
         try {
             snappyDb = DBFactory.open(context, "welcomedb", new Kryo());
-            for (String[] batch : snappyDb.allKeysIterator().byBatch(Constance.ConstHolder.MAX_POST_LIMIT)) {
-                for (String key : batch)
+            KeyIterator it = snappyDb.allKeysIterator();
+            while (it.hasNext())
+                for (String key : it.next(Constance.ConstHolder.MAX_POST_LIMIT))
                     posts.add(snappyDb.get(key, Post.class));
-            }
+
 
         } catch (SnappydbException e) {
             e.printStackTrace();
@@ -98,7 +100,7 @@ public class PostRepositoryImpl implements PostRepository {
         try {
             snappyDb = DBFactory.open(context, "welcomedb", new Kryo());
             if (snappyDb.exists(post.getId()))
-                snappyDb.put(post.getId(),post);
+                snappyDb.put(post.getId(), post);
         } catch (SnappydbException e) {
             e.printStackTrace();
         } finally {
@@ -117,7 +119,7 @@ public class PostRepositoryImpl implements PostRepository {
         try {
             snappyDb = DBFactory.open(context, "welcomedb", new Kryo());
             if (!snappyDb.exists(post.getId()))
-                snappyDb.put(post.getId(),post);
+                snappyDb.put(post.getId(), post);
         } catch (SnappydbException e) {
             e.printStackTrace();
         } finally {
