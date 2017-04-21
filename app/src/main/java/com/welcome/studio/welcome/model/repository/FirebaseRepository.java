@@ -35,6 +35,8 @@ public interface FirebaseRepository {
 
     Observable<RxFirebaseChildEvent<Post>> listenPosts(String country, String city);
 
+    Observable<Post> listenPost(String country, String city, String key);
+
     Observable<Boolean> sendComment(Post post, CommentModel comment);
 
     Observable<RxFirebaseChildEvent<CommentModel>> listenComments(Post post);

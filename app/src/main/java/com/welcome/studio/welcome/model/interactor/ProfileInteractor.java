@@ -13,11 +13,19 @@ import rx.Subscription;
 public interface ProfileInteractor {
     User getUserCache();
 
-    Observable<Rating> getRating();
+    Observable<Rating> getRating(User user);
 
-    Observable<List<Post>> getHistoryPosts();
+    Observable<List<Post>> getHistoryPosts(User user);
 
-    Subscription listenPost();
+    Subscription listenPost(User user);
 
-    Observable<List<Post>> getNowPosts();
+    Observable<List<Post>> getNowPosts(User user);
+
+    Observable<List<Post>> getWillcomedPost(User user);
+
+    Observable<Boolean> changeLikeCount(Post post);
+
+    Observable<Boolean> changeWillcomeCount(Post post);
+
+    Observable<Boolean> changeReportCount(Post post);
 }

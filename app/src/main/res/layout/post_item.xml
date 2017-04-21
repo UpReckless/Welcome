@@ -206,7 +206,7 @@
 
                     <TextView
                         android:id="@+id/txt_description"
-                        android:layout_width="220sp"
+                        android:layout_width="200sp"
                         android:layout_height="wrap_content"
                         android:paddingRight="8dp"
                         android:text="asdasdasds" />

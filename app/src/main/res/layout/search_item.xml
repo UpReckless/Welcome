@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/search_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.subinkrishna.widget.CircularImageView
+            android:id="@+id/img_thumb"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@mipmap/img_avatar" />
+
+        <TextView
+            android:textColor="@color/colorAccent"
+            android:layout_gravity="center"
+            android:id="@+id/txt_rating"
+            android:text="14.1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <TextView
+        android:paddingLeft="8dp"
+        android:paddingBottom="8dp"
+        android:layout_gravity="center"
+        android:id="@+id/txt_name"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:textColor="@color/textColorPrimary"
+        android:text="Vasya"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <android.support.v4.widget.Space
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+    <LinearLayout
+        android:paddingRight="16dp"
+        android:paddingTop="16dp"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_gravity="bottom"
+            android:id="@+id/txt_country"
+            android:text="Kyrgyzstan"
+            android:textColor="@color/textColorSecondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_gravity="bottom"
+            android:id="@+id/txt_city"
+            android:text="Bishkek"
+            android:textColor="@color/textColorSecondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</LinearLayout>

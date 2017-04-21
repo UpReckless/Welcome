@@ -11,15 +11,7 @@
             android:id="@+id/img_thumb"
             android:layout_width="36dp"
             android:layout_height="36dp" />
-        <TextView
-            android:paddingLeft="8dp"
-            android:text="13"
-            android:textStyle="italic"
-            android:layout_gravity="center"
-            android:id="@+id/txt_rating"
-            android:textColor="@color/colorRating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+
         <TextView
             android:textColor="@color/textColorPrimary"
             android:layout_gravity="bottom"
@@ -40,15 +32,15 @@
         <TextView
             android:paddingLeft="36dp"
             android:id="@+id/txt_comment"
-            android:text="commetnaslasd"
-            android:layout_width="wrap_content"
+            android:text="commetnaslasdsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"
+            android:layout_width="300dp"
             android:layout_height="wrap_content" />
         <Space
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="1"/>
         <LinearLayout
-            android:layout_gravity="center"
+            android:layout_gravity="top"
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">

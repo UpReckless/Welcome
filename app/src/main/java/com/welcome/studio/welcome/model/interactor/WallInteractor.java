@@ -16,13 +16,13 @@ import rx.Subscription;
 public interface WallInteractor {
     Observable<Boolean> controlFab();
 
-    Subscription controlPosts(RecyclerView recyclerView);
+    Observable<List<Post>> controlPosts(RecyclerView recyclerView);
 
     Observable<List<Post>> getCachedPosts();
 
     Subscription listenPosts();
 
-    Observable<Boolean> sharePost(Post post);
+    Observable<Boolean> sharePost(Post post, RecyclerView recyclerView);
 
     Observable<Boolean> changeLikeCount(Post post);
 

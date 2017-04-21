@@ -2,12 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="100sp"
-    android:padding="8dp"
     android:layout_height="100sp">
-    <ImageView
+    <com.welcome.studio.welcome.squarecamera_mock.SquareImageView
         android:src="@drawable/load_holder"
         android:id="@+id/img_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_margin="1dp"/>
 
 </LinearLayout>

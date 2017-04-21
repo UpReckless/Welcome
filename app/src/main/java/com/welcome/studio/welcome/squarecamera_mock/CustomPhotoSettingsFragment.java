@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -61,7 +60,7 @@ public class CustomPhotoSettingsFragment extends Fragment implements OnTagClickL
     @Bind(R.id.chb_dress)
     CheckBox chbDressCode;
     @Bind(R.id.img_picture)
-    ImageView imgPicture;
+    SquareImageView imgPicture;
     @Bind(R.id.recycler_view)
     RecyclerView recyclerView;
     @Bind(R.id.tag_view)
@@ -148,7 +147,7 @@ public class CustomPhotoSettingsFragment extends Fragment implements OnTagClickL
             TimePicker timePicker = new TimePicker(getContext());
             builder.setTitle("Время окончания")
                     .setView(timePicker)
-                    .setCancelable(false)
+                    .setCancelable(true)
                     .setPositiveButton("Share", (dialog, which) -> {
                         Post post = generatePost(timePicker.getCurrentHour(), timePicker.getCurrentMinute());
                         ((CameraActivity)getActivity()).returnPost(post);

@@ -8,17 +8,26 @@ public class Constance {
         public static final int MAX_POST_LIMIT = 20;
         public static final int EMPTY_LIST_COUNT = 0;
         public static final int RETRY_COUNT = 3;
+        public static final int MAX_HISTORY_COLUMNS = 3;
+
+        public static final int MAX_USER_LIMIT=50;
     }
 
     public static class URL {
-        public static final String HOST = "http://192.168.3.111:8080/";
+        public static final String HOST = "http://env-4294164.mycloud.by/wlcome/";
         public static final String CHECK_SERVER_CONNECTION = "user/connection";
 
         public static final String USER_REG = "user/reg";
         public static final String USER_AUTH = "user/auth";
-        public static final String USER_GET_ALL = "user/getAll";
+        public static final String USER_GET_ALL = "user/getUsers";
+        public static final String USER_GET_QUERY = "user/getQueryUsers";
+        public static final String USER_GET = "user/getUser";
         public static final String USER_UPDATE = "user/update";
         public static final String USER_CHECK_DUPLICATE = "user/checkname";
+
+        public static final String GET_NOW_USER_POSTS = "post/getNowPosts";
+        public static final String GET_WILLCOME_USER_POSTS = "post/getWillcomePosts";
+        public static final String GET_HISTORY_USER_POSTS = "post/getHistoryPosts";
 
         public static final String RATING_GET = "rating/get";
 
@@ -29,10 +38,13 @@ public class Constance {
     public static class IntentCodeHolder {
         public static final int LOAD_PHOTO_FROM_GALLERY = 500;
         public static final int CAMERA_CODE = 501;
+
+        public static final int NOTIFICATION_WILLCOME_CODE=100;
     }
 
     public static class IntentKeyHolder {
         public static final String POST_KEY = "post";
+        public static final String NOTIFICATION_KEY="new_notification";
     }
 
     public static class SharedPreferencesHolder {

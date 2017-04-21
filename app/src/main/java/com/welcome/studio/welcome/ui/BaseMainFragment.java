@@ -8,14 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.welcome.studio.welcome.ui.main.MainActivity;
+import com.welcome.studio.welcome.ui.module.main.MainActivity;
 
 import java.lang.annotation.Annotation;
 
 import butterknife.ButterKnife;
 
 /**
- * Created by Royal on 04.02.2017.
+ * Created by @mistreckless on 04.02.2017. !
  */
 @SuppressWarnings("unchecked")
 public abstract class BaseMainFragment extends BaseFragment {
@@ -24,6 +24,8 @@ public abstract class BaseMainFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         inject();
+        getPresenter().setView(this);
+        getPresenter().setRouter(getRouter());
     }
 
     @Override
